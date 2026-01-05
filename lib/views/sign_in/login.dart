@@ -82,7 +82,8 @@ class LoginForm extends StatelessWidget {
           Consumer2<UserViewModel, TimelineController>(
             builder: (context, userVM, timeline, child) =>
             DefaultButton(
-              onTap: () async { // 1. Make this async
+              onTap: () async {
+                // 1. Make this async
                 if (_formKey.currentState!.validate()) {
                   // 2. Await the result (Assuming login returns Future<bool>)
                   final state = await userVM.login(

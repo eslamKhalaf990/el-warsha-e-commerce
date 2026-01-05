@@ -34,8 +34,34 @@ class OrdersService {
     return response;
   }
 
-    Future<http.Response> getAllOrders(String token) async {
-      debugPrint("getAllOrders called with $token");
+  Future<http.Response> applyVoucher(String token, String code, double cartTotal) async {
+    final response = await http
+        .post(
+      Uri.parse(Baseurl.validateVoucher),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        "Authorization": 'Bearer $token',
+      },
+      body: jsonEncode({
+        "code": code,
+        "cartTotal": cartTotal
+      }),
+    )
+        .timeout(const Duration(seconds: Constants.TIMEOUT));
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+
+    } else {
+      // If the server didn't create the order, throw an error
+      throw Exception(
+          'Failed to add order: ${response.statusCode} ${response.body}');
+    }
+    return response;
+  }
+
+  Future<http.Response> getAllOrders(String token) async {
+      debugPrint("getAllOrders called");
       http.Response response;
       try {
         response = await http.get(

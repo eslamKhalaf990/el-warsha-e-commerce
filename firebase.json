@@ -1,4 +1,16 @@
 {
+  "flutter":{
+    "platforms":{
+      "dart":{"lib/firebase_options.dart":
+      {
+        "projectId":"el-warsha-accessories",
+        "configurations":{
+          "web":"1:935121731648:web:4e3db951c40cefe336dfa5"
+        }
+      }
+      }
+    }
+  },
   "hosting": {
     "public": "build/web",
     "ignore": [

@@ -1,3 +1,5 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:warsha_commerce/services/customers_services.dart';
@@ -16,10 +18,18 @@ import 'package:warsha_commerce/views/shopping_cart/shopping_cart.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:warsha_commerce/views/sign_in/profile.dart';
 import 'package:warsha_commerce/views/sign_in/sign_in.dart';
-
+import 'package:warsha_commerce/utils/firebase_options.dart';
 import 'controllers/time_line.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
+
   runApp(
     MultiProvider(
       providers: [
