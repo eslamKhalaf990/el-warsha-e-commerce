@@ -9,8 +9,7 @@ class CustomerVM extends ChangeNotifier {
 
   CustomerVM(this._customerService);
 
-  Future<String> addCustomer(String name, String governorate,
-      String phone, String address, String secondaryPhone, String city, String email, String password) async {
+  Future<String> addCustomer(String name, String governorate, String phone, String address, String secondaryPhone, String city, String email, String password) async {
     String status = "";
     try {
       isLoading = true;
@@ -32,7 +31,6 @@ class CustomerVM extends ChangeNotifier {
     }
     return status;
   }
-
 
   void toggleLogin(bool state) {
     isLogin = state;

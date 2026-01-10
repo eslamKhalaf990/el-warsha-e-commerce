@@ -1,7 +1,10 @@
+import 'dart:ui';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:warsha_commerce/controllers/drag_drop_controller.dart';
 import 'package:warsha_commerce/services/customers_services.dart';
 import 'package:warsha_commerce/services/orders_service.dart';
 import 'package:warsha_commerce/services/products_service.dart';
@@ -30,6 +33,13 @@ Future<void> main() async {
 
   FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
 
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
+
   runApp(
     MultiProvider(
       providers: [
@@ -41,6 +51,9 @@ Future<void> main() async {
 
         ChangeNotifierProvider<TimelineController>(
           create: (context) => TimelineController(),
+        ),
+        ChangeNotifierProvider<DragDropController>(
+          create: (context) => DragDropController(),
         ),
 
         ChangeNotifierProvider<UserViewModel>(

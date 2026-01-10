@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:warsha_commerce/models/cart.dart';
@@ -75,6 +77,7 @@ class CartVM with ChangeNotifier {
     required String downPayment,
     String bankAccountId = "8",
     String notes = "",
+    List<Uint8List>? images
   }) async {
 
     // 1. Set Loading
@@ -104,8 +107,10 @@ class CartVM with ChangeNotifier {
     );
 
     try {
+
+
       // 4. Send Request (toJson handles the formatting now)
-      final response = await _ordersService.addOrder(requestModel, _userViewModel.token);
+      final response = await _ordersService.addOrder(requestModel, _userViewModel.token, images: images);
 
       _isLoading = false;
       notifyListeners();

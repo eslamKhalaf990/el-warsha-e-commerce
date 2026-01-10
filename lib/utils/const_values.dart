@@ -14,7 +14,7 @@ class Constants {
   static int get OPACITY_03 => (0.3 * 255).toInt();
 
   //borders
-  static BorderRadius get BORDER_RADIUS_5 => BorderRadius.circular(5);
+  static BorderRadius get BORDER_RADIUS_5 => BorderRadius.circular(25);
   static BorderRadius get BORDER_RADIUS_15 => BorderRadius.circular(15);
   static BorderRadius get BORDER_RADIUS_50 => BorderRadius.circular(50);
   static BorderRadius get BORDER_RADIUS_100 => BorderRadius.circular(100);

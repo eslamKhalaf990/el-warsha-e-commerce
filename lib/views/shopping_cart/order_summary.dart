@@ -88,7 +88,7 @@ class _OrderSummaryState extends State<OrderSummary> {
                                 ),
                                 duration: const Duration(seconds: 2),
                                 behavior: SnackBarBehavior
-                                    .floating, // Floats above bottom nav
+                                    .floating,
                                 backgroundColor: Colors.black,
                               ),
                             );

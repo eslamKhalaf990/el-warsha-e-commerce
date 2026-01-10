@@ -38,45 +38,45 @@ class RightCartColumn extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // --- Header (Select All & Delete) ---
-        StyledContainer(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                    userVM.address
-                ),
-              ),
-              const SizedBox(width: 30),
+        // StyledContainer(
+        //   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+        //   child: Row(
+        //     children: [
+        //       Expanded(
+        //         child: Text(
+        //             userVM.address
+        //         ),
+        //       ),
+        //       const SizedBox(width: 30),
+        //
+        //       // // Delete Action
+        //       // InkWell(
+        //       //   onTap: () {
+        //       //     // UX: Confirm before deleting everything
+        //       //   },
+        //       //   child: Container(
+        //       //     padding: const EdgeInsets.symmetric(
+        //       //       horizontal: 20,
+        //       //       vertical: 10,
+        //       //     ),
+        //       //     decoration: BoxDecoration(
+        //       //       color: Theme.of(context).colorScheme.tertiary,
+        //       //       borderRadius: Constants.BORDER_RADIUS_5,
+        //       //     ),
+        //       //     child: Text(
+        //       //       "تغيير عنوان التوصيل",
+        //       //       style: TextStyle(
+        //       //         fontWeight: FontWeight.bold,
+        //       //         color: Theme.of(context).colorScheme.onTertiary,
+        //       //       ),
+        //       //     ),
+        //       //   ),
+        //       // ),
+        //     ],
+        //   ),
+        // ),
 
-              // Delete Action
-              InkWell(
-                onTap: () {
-                  // UX: Confirm before deleting everything
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.tertiary,
-                    borderRadius: Constants.BORDER_RADIUS_5,
-                  ),
-                  child: Text(
-                    "تغيير عنوان التوصيل",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onTertiary,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 20),
+        // const SizedBox(height: 20),
 
         StyledContainer(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),

@@ -30,7 +30,38 @@ class UserService {
       throw Exception('Failed to login with these credentials: $e');
     }
     return response;
-
-
   }
+
+  Future<http.Response> addCustomer(String name, String governorate, String phone, String address, String secondaryPhone, String city, String email, String password) async {
+    debugPrint("addCustomer called $name");
+    http.Response response;
+    try {
+      response = await http.post(
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          Uri.parse(
+            Baseurl.signUpCustomerAPI,
+          ),
+          body: jsonEncode({
+            "fullName": name,
+            "phone": phone,
+            "email": email,
+            "password": password,
+            "governorate": governorate,
+            "address": address,
+            "secondaryPhone": secondaryPhone,
+            "city": city,
+          })
+      ).timeout(const Duration(seconds: Constants.TIMEOUT));
+
+    } on TimeoutException {
+      throw Exception('The request timed out. Please try again later.');
+    } catch (e) {
+      throw Exception('Failed to add your new customer: $e');
+    }
+    return response;
+  }
+
 }

@@ -1,6 +1,6 @@
 class Baseurl {
-  static String baseURL = "http://localhost:8080/";
-  // static String baseURL = "https://yards-loops-ethics-much.trycloudflare.com/";
+  // static String baseURL = "http://localhost:8080/";
+  static String baseURL = "https://yards-loops-ethics-much.trycloudflare.com/";
   static String baseURLImages = "${baseURL}api/files/";
 
   /// =============== Authentication APIs ============== ///
@@ -10,6 +10,7 @@ class Baseurl {
   /// ===============   Customers APIs    ============== ///
   static String getAllCustomersAPI = '${baseURL}customers';
   static String addCustomerAPI = '${baseURL}customers';
+  static String signUpCustomerAPI = '${baseURL}customers/customerSignUp';
   static String updateCustomerAPI = '${baseURL}customers';
   static String deleteCustomerAPI = '${baseURL}customers';
   static String countGovernoratePerCustomerAPI = '${baseURL}customers/countsByGovernorate';

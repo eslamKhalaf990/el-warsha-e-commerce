@@ -2,18 +2,20 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 class DragDropController extends ChangeNotifier {
-  Uint8List? droppedBytes;
-  String? droppedFileName;
+  List<Uint8List> images = [];
 
-  void updateDropFile(Uint8List bytes, String name) {
-    droppedBytes = bytes;
-    droppedFileName = name;
+  void addImages(List<Uint8List> newImages) {
+    images.addAll(newImages);
+    notifyListeners();
+  }
+
+  void removeImage(int index) {
+    images.removeAt(index);
     notifyListeners();
   }
 
   void clear() {
-    droppedBytes = null;
-    droppedFileName = null;
+    images.clear();
     notifyListeners();
   }
 }

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:warsha_commerce/controllers/time_line.dart';
 import 'package:warsha_commerce/utils/const_values.dart';
 import 'package:warsha_commerce/utils/default_button.dart';
 import 'package:warsha_commerce/utils/governerates.dart';
 import 'package:warsha_commerce/utils/navigator.dart';
 import 'package:warsha_commerce/view_models/customers_v_m.dart';
+import 'package:warsha_commerce/view_models/user_v_m.dart';
 
 class SignUpForm extends StatelessWidget {
   SignUpForm({super.key});
@@ -144,12 +146,12 @@ class SignUpForm extends StatelessWidget {
 
           const SizedBox(height: 32),
 
-          Consumer<CustomerVM>(
-            builder: (context, customerVM, child) => // Inside SignUpForm -> build -> Column -> Consumer<CustomerVM> -> DefaultButton
+          Consumer<UserViewModel>(
+            builder: (context, userVM, child) => // Inside SignUpForm -> build -> Column -> Consumer<CustomerVM> -> DefaultButton
             DefaultButton(
               onTap: () async {
                 if (_formKey.currentState!.validate()) {
-                  final state = await customerVM.addCustomer(
+                  final state = await userVM.addCustomer(
                     _nameController.text,
                     _cityController.text,
                     _phoneController.text,
@@ -164,14 +166,15 @@ class SignUpForm extends StatelessWidget {
                     // Success Feedback
                     ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
                       SnackBar(
-                        content: Text('تم إنشاء الحساب بنجاح، يرجى تسجيل الدخول'), // Account created
+                        content: Text('تم إنشاء الحساب بنجاح، يمكنك متابعة طلبك'), // Account created
                         backgroundColor: Theme.of(navigatorKey.currentContext!).colorScheme.tertiary,
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
+                    Provider.of<TimelineController>(navigatorKey.currentContext!, listen: false).changePage(1);
 
                     // Switch to login tab
-                    customerVM.toggleLogin(true);
+                    // userVM.toggleLogin(true);
                   } else {
                     // Optional: Error Feedback
                     ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
@@ -186,8 +189,8 @@ class SignUpForm extends StatelessWidget {
               },
               title: 'إنشاء الحساب',
               margin: EdgeInsets.zero,
-              isValid: !customerVM.isLoading,
-              isLoading: customerVM.isLoading,
+              isValid: !userVM.isLoading,
+              isLoading: userVM.isLoading,
             ),
           ),
         ],

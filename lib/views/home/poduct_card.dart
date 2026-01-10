@@ -76,7 +76,7 @@ class _ProductCardState extends State<ProductCard>
                   fit: StackFit.expand,
                   children: [
                     ClipRRect(
-                      borderRadius: Constants.BORDER_RADIUS_5,
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
                       child: Opacity(
                         opacity: isOutOfStock ? 0.6 : 1.0,
                         child: CachedNetworkImage(

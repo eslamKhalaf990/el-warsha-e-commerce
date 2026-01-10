@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:warsha_commerce/controllers/drag_drop_controller.dart';
 import 'package:warsha_commerce/controllers/time_line.dart';
 import 'package:warsha_commerce/utils/const_values.dart';
 import 'package:warsha_commerce/utils/default_button.dart';
@@ -8,6 +9,7 @@ import 'package:warsha_commerce/utils/governerates.dart';
 import 'package:warsha_commerce/utils/navigator.dart';
 import 'package:warsha_commerce/view_models/cart_v_m.dart';
 import 'package:warsha_commerce/view_models/user_v_m.dart';
+import 'package:warsha_commerce/views/payment/attachments.dart';
 import 'package:warsha_commerce/views/shopping_cart/container_style.dart';
 
 class Payment extends StatefulWidget {
@@ -83,12 +85,18 @@ class _PaymentState extends State<Payment> {
 
                           // Down payment
                           TextFormField(
-                            // controller: cardNumberController,
                             keyboardType: TextInputType.number,
                             onChanged: (value){
-                              setState(() {
-                                downPaymentController.text = value;
-                              });
+                              try {
+                                double.parse(value);
+                                setState(() {
+                                  downPaymentController.text = value;
+                                });
+                              }
+                              catch(e){
+                                setState(() {
+                                });
+                              }
                             },
                             decoration: InputDecoration(
                               prefixIcon: Icon(Icons.money),
@@ -112,11 +120,18 @@ class _PaymentState extends State<Payment> {
                               suffix: Text("جنيه"),
                             ),
                             validator: (value) {
-                              if (value == null || value.isEmpty){
-                                return "ادخل قيمة صالحة";
+
+                              try {
+                                if (value == null || value.isEmpty){
+                                  return "ادخل قيمة صالحة";
+                                }
+                                else if(double.parse(value) < 50.0){
+                                  return "اقل قيمة صالحة هي 50 جنيه";
+                                }
                               }
-                              else if(double.parse(value) < 50.0){
-                                return "اقل قيمة صالحة هي 50 جنيه";
+                              catch(e){
+
+                                return "مسموح بارقام فقط";
                               }
                               return null;
                             },
@@ -393,7 +408,7 @@ class _PaymentState extends State<Payment> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               Text(
-                "${Provider.of<CartVM>(context).totalAmount - double.parse(downPayment.isEmpty? "0.0" :downPayment) +
+                "${Provider.of<CartVM>(context).totalAmount - double.parse(downPayment.isEmpty? "0.0" : downPayment) +
                     (Provider.of<CartVM>(context).itemCount == 0 ?
                     0 :
                     Governorates.getDeliveryPrice(Provider.of<UserViewModel>(context).governorate))} EGP",
@@ -401,6 +416,10 @@ class _PaymentState extends State<Payment> {
               ),
             ],
           ),
+          const SizedBox(height: 30),
+
+          DragDropMultipleImages(),
+
           const SizedBox(height: 30),
 
           // notes
@@ -448,7 +467,7 @@ class _PaymentState extends State<Payment> {
                 final state = await Provider.of<CartVM>(
                   context,
                   listen: false,
-                ).placeOrder(downPayment: downPayment.toString(), notes: notesController.text);
+                ).placeOrder(downPayment: downPayment.toString(), notes: notesController.text, images: Provider.of<DragDropController>(context, listen: false).images);
 
                 if (state != null) {
                   ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(

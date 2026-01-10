@@ -38,6 +38,44 @@ class UserViewModel extends ChangeNotifier {
     }
   }
 
+  Future<String> addCustomer(String name, String governorate, String phone, String address, String secondaryPhone, String city, String email, String password) async {
+    String status = "";
+    try {
+      isLoading = true;
+      notifyListeners();
+      final response = await _userService.addCustomer(name, governorate, phone, address, secondaryPhone, city, email, password);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        // Update local variables
+        token = data["token"];
+        address = data["address"];
+        name = data["name"];
+        phone = data["phone"];
+        email = data["email"];
+        governorate = data["governorate"];
+
+        // 2. Persist entire object as a JSON string
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user_data', jsonEncode(data));
+
+        status = "customer_added";
+        debugPrint("customer added successfully");
+      } else {
+        status = "customer_not_added";
+        debugPrint("Failed to add customer: ${response.statusCode}");
+      }
+    } catch (e) {
+      status = "customer_not_added";
+      debugPrint("Error fetching customer: $e");
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+    return status;
+  }
+
+
   Future<String> login(String username, String password) async {
     String status = "";
     try {
@@ -89,6 +127,6 @@ class UserViewModel extends ChangeNotifier {
     governorate = "-";
 
     notifyListeners();
-    debugPrint("🧹 State cleared");
+    debugPrint("State cleared");
   }
 }

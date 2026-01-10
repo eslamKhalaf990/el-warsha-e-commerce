@@ -8,8 +8,7 @@ import 'base_url.dart';
 
 class CustomerService {
 
-  Future<http.Response> addCustomer(String name, String governorate,
-      String phone, String address, String secondaryPhone, String city, String email, String password) async {
+  Future<http.Response> addCustomer(String name, String governorate, String phone, String address, String secondaryPhone, String city, String email, String password) async {
     debugPrint("addCustomer called $name");
     http.Response response;
     try {
