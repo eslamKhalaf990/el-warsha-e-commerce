@@ -6,6 +6,7 @@ import 'package:warsha_commerce/services/base_url.dart';
 import 'package:warsha_commerce/utils/const_values.dart';
 import 'package:warsha_commerce/utils/image_helper.dart';
 import 'package:warsha_commerce/view_models/cart_v_m.dart';
+import 'package:warsha_commerce/views/products/product_details.dart';
 
 class ProductCard extends StatefulWidget {
   final Product product;
@@ -30,10 +31,13 @@ class _ProductCardState extends State<ProductCard>
 
   @override
   Widget build(BuildContext context) {
-    final formattedPrice = widget.product.sellingPrice.toStringAsFixed(2);
+    final sellingPrice = widget.product.sellingPrice.toStringAsFixed(2);
+    final priceAfterDiscount = widget.product.totalPrice.toStringAsFixed(2);
 
     final int stock = int.tryParse(widget.product.quantity) ?? 0;
+    final double discount = (widget.product.discount);
     final bool isOutOfStock = stock <= 0;
+    final bool isDiscountApplied = discount > 0.0;
     final cart = Provider.of<CartVM>(context);
     final isInCart = cart.items.containsKey(widget.product.id);
     final currentQty = isInCart ? cart.items[widget.product.id]!.quantity : 0;
@@ -47,7 +51,20 @@ class _ProductCardState extends State<ProductCard>
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       child: GestureDetector(
-        onTap: isOutOfStock ? null : () {},
+        onTap: isOutOfStock ? null : () {
+          // Navigator.push(context, MaterialPageRoute(builder: (_) => ProductDetailsPage(
+          //   product: ProductModel(
+          //     title: widget.product.name,
+          //     price: widget.product.sellingPrice,
+          //     images: ["${Baseurl.baseURLImages}${ImageHelper.extractFileId(widget.product.imageUrl)}"], // Replace with your image
+          //     availableColors: [Colors.black, Colors.grey[800]!, Colors.red[400]!], // Silver color
+          //     colorName: "Silver",
+          //     sizes: ["16mm / us 6", "17mm / us 7", "18mm / us 8", "19mm / us 9", "20mm / us 10"],
+          //     inStock: true,
+          //     badges: ["1 Year Color Warranty", "Buy 2 Get 1 Free"],
+          //   ),
+          // )));
+        },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           transform: Matrix4.identity()
@@ -104,7 +121,7 @@ class _ProductCardState extends State<ProductCard>
                       left: 8,
                       child: isOutOfStock
                           ? _buildBadge("SOLD OUT", Colors.grey[800]!)
-                          : _buildBadge("NEW", Colors.black),
+                          : isDiscountApplied ? _buildBadge("DISCOUNT", Colors.red) :_buildBadge("NEW", Colors.black),
                     ),
 
                     // Favorite Icon
@@ -208,7 +225,7 @@ class _ProductCardState extends State<ProductCard>
                                       "أضف الي السلة",
                                       style: TextStyle(
                                         fontSize:
-                                            11, // Slightly smaller to prevent overflow
+                                            11,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -266,17 +283,33 @@ class _ProductCardState extends State<ProductCard>
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           // 1. Price Section
-                          Flexible(
-                            child: Text(
-                              "EGP $formattedPrice",
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w800,
-                                color: isOutOfStock
-                                    ? Colors.grey
-                                    : Colors.black,
+                          Column(
+                            children: [
+                              isDiscountApplied ? Text(
+                                "EGP $priceAfterDiscount",
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w800,
+                                  color: isOutOfStock
+                                      ? Colors.grey
+                                      : Colors.black,
+                                ),
+                              ) : Container(),
+                              const SizedBox(width: 4),
+                              Text(
+                                "EGP $sellingPrice",
+                                style: TextStyle(
+                                  decoration: isDiscountApplied
+                                      ? TextDecoration.lineThrough
+                                      : TextDecoration.none,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w800,
+                                  color: isOutOfStock || isDiscountApplied
+                                      ? Colors.grey.shade600
+                                      : Colors.black,
+                                ),
                               ),
-                            ),
+                            ],
                           ),
 
                           // 2. The Smart Action Button
@@ -301,14 +334,14 @@ class _ProductCardState extends State<ProductCard>
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                      '${widget.product.name} added to bag',
+                                      ' تم اضافة ${widget.product.name} للسلة ',
                                     ),
                                     duration: const Duration(seconds: 2),
                                     behavior: SnackBarBehavior
                                         .floating, // Floats above bottom nav
                                     backgroundColor: Colors.black,
                                     action: SnackBarAction(
-                                      label: 'UNDO',
+                                      label: 'تراجع',
                                       textColor: Colors.white,
                                       onPressed: () {
                                         // Optional: Add logic to remove the item instantly

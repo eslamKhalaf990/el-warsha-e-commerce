@@ -10,16 +10,22 @@ class CartItemData {
   final String name;
   final String image;
   final String size;
+  final String category;
   final String color;
   final int price;
+  final double totalPrice;
+  final double discount;
   final int quantity;
 
   const CartItemData({
     required this.name,
     required this.image,
     required this.size,
+    required this.category,
     required this.color,
     required this.price,
+    required this.totalPrice,
+    required this.discount,
     required this.quantity,
   });
 }
@@ -37,46 +43,6 @@ class RightCartColumn extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // --- Header (Select All & Delete) ---
-        // StyledContainer(
-        //   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-        //   child: Row(
-        //     children: [
-        //       Expanded(
-        //         child: Text(
-        //             userVM.address
-        //         ),
-        //       ),
-        //       const SizedBox(width: 30),
-        //
-        //       // // Delete Action
-        //       // InkWell(
-        //       //   onTap: () {
-        //       //     // UX: Confirm before deleting everything
-        //       //   },
-        //       //   child: Container(
-        //       //     padding: const EdgeInsets.symmetric(
-        //       //       horizontal: 20,
-        //       //       vertical: 10,
-        //       //     ),
-        //       //     decoration: BoxDecoration(
-        //       //       color: Theme.of(context).colorScheme.tertiary,
-        //       //       borderRadius: Constants.BORDER_RADIUS_5,
-        //       //     ),
-        //       //     child: Text(
-        //       //       "تغيير عنوان التوصيل",
-        //       //       style: TextStyle(
-        //       //         fontWeight: FontWeight.bold,
-        //       //         color: Theme.of(context).colorScheme.onTertiary,
-        //       //       ),
-        //       //     ),
-        //       //   ),
-        //       // ),
-        //     ],
-        //   ),
-        // ),
-
-        // const SizedBox(height: 20),
 
         StyledContainer(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
@@ -154,11 +120,13 @@ class RightCartColumn extends StatelessWidget {
                     // We map the data so your existing CartItemRow works without changes
                     final uiModel = CartItemData(
                       name: providerItem.title,
-                      size: "M",
+                      category: providerItem.category,
                       color: "Black",
                       price: providerItem.price.toInt(),
                       quantity: providerItem.quantity,
-                      image: providerItem.imageUrl,
+                      totalPrice: providerItem.totalPrice,
+                      discount: providerItem.discount,
+                      image: providerItem.imageUrl, size: '',
                     );
 
                     return CartItemRow(

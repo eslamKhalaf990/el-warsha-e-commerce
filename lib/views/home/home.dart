@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:warsha_commerce/view_models/product_v_m.dart';
-import 'package:warsha_commerce/views/home/poduct_card.dart';
+import 'package:warsha_commerce/views/products/poduct_card.dart';
 
 import 'home_app_bar.dart';
 

@@ -7,8 +7,13 @@ import 'package:warsha_commerce/utils/image_helper.dart';
 import 'package:warsha_commerce/views/shopping_cart/cart_items.dart';
 
 class CartItemRow extends StatelessWidget {
-
-  const CartItemRow({super.key, required this.data, required this.increment, required this.decrement, required this.removeItem});
+  const CartItemRow({
+    super.key,
+    required this.data,
+    required this.increment,
+    required this.decrement,
+    required this.removeItem,
+  });
 
   final CartItemData data;
   final void Function() increment;
@@ -65,17 +70,12 @@ class CartItemRow extends StatelessWidget {
                 },
                 // Show a fallback if the image fails to load
                 errorBuilder: (context, error, stackTrace) {
-                  return const Icon(
-                    Iconsax.shopping_bag,
-                    size: 40,
-                  );
+                  return const Icon(Iconsax.shopping_bag, size: 40);
                 },
               ),
             ),
           ),
-
         ),
-
 
         SizedBox(width: isSmallScreen ? 15 : 25),
 
@@ -83,30 +83,96 @@ class CartItemRow extends StatelessWidget {
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment
+                .center, // Centers content vertically if image is tall
             children: [
+              // 1. Name: Limit lines to prevent it from eating all vertical space
               Text(
                 data.name,
                 style: TextStyle(
-                    fontSize: isSmallScreen ? 16 : 18,
-                    fontWeight: FontWeight.bold
+                  fontSize: isSmallScreen
+                      ? 14
+                      : 18, // Slightly smaller base for mobile
+                  fontWeight: FontWeight.bold,
                 ),
-                overflow: TextOverflow.ellipsis, // Safety for long names
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 8),
-              Text("الحجم: ${data.size}", style: TextStyle(fontSize: isSmallScreen ? 12 : 14)),
-              Text("اللون: ${data.color}", style: TextStyle(fontSize: isSmallScreen ? 12 : 14)),
-              const SizedBox(height: 20),
+              const SizedBox(height: 4),
+
               Text(
-                "${data.price} EGP",
-                style: TextStyle(
-                    fontSize: isSmallScreen ? 16 : 20,
-                    fontWeight: FontWeight.bold
-                ),
+                "النوع: ${data.category}",
+                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
+
+              // Spacer pushes pricing to the bottom, or just use SizedBox for fixed gap
+              const SizedBox(height: 8),
+
+              if (data.discount > 0) ...[
+                // 2. Responsive Price Layout using WRAP
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8, // Horizontal space between items
+                  runSpacing: 4, // Vertical space if it wraps to next line
+                  children: [
+                    // A. Final Price (The Hero)
+                    Column(
+                      children: [
+                        Text(
+                          "${data.totalPrice} EGP",
+                          style: TextStyle(
+                            fontSize: isSmallScreen ? 16 : 20,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black,
+                          ),
+                        ),
+
+                        // B. Old Price (Struck through)
+                        Text(
+                          "${data.price} EGP",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                            decoration: TextDecoration.lineThrough,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    // C. The Savings Badge (Optional: Keep it inside Wrap or move above)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade50,
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(color: Colors.green.shade200),
+                      ),
+                      child: Text(
+                        "SAVE ${data.discount}", // Short text for mobile
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green[800],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ] else ...[
+                Text(
+                  "${data.totalPrice} EGP",
+                  style: TextStyle(
+                    fontSize: isSmallScreen ? 16 : 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ],
           ),
         ),
-
         // Actions (Trash & Counter)
         SizedBox(
           height: isSmallScreen ? 80 : 110,
@@ -115,9 +181,8 @@ class CartItemRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               IconButton(
-                  onPressed: removeItem,
-                  icon: Icon(Iconsax.trash_copy, color: Colors.red,
-                  ),
+                onPressed: removeItem,
+                icon: Icon(Iconsax.trash_copy, color: Colors.red),
               ),
               Container(
                 padding: EdgeInsets.symmetric(
@@ -132,9 +197,10 @@ class CartItemRow extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                        onPressed: increment,
-                        icon: Icon(Icons.add, size: isSmallScreen ? 16 : 18)),
-                    SizedBox(width: isSmallScreen ? 10 : 20),
+                      onPressed: increment,
+                      icon: Icon(Icons.add, size: isSmallScreen ? 16 : 18),
+                    ),
+                    SizedBox(width: isSmallScreen ? 5 : 5),
                     Text(
                       "${data.quantity}",
                       style: TextStyle(
@@ -142,10 +208,11 @@ class CartItemRow extends StatelessWidget {
                         fontSize: isSmallScreen ? 14 : 16,
                       ),
                     ),
-                    SizedBox(width: isSmallScreen ? 10 : 20),
+                    SizedBox(width: isSmallScreen ? 10 : 5),
                     IconButton(
-                        onPressed: decrement,
-                        icon: Icon(Icons.remove, size: isSmallScreen ? 16 : 18)),
+                      onPressed: decrement,
+                      icon: Icon(Icons.remove, size: isSmallScreen ? 16 : 18),
+                    ),
                   ],
                 ),
               ),

@@ -17,6 +17,7 @@ import 'package:warsha_commerce/view_models/product_v_m.dart';
 import 'package:warsha_commerce/view_models/user_v_m.dart';
 import 'package:warsha_commerce/views/home/home.dart';
 import 'package:warsha_commerce/views/orders/orders_history.dart';
+import 'package:warsha_commerce/views/products/product_details.dart';
 import 'package:warsha_commerce/views/shopping_cart/shopping_cart.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:warsha_commerce/views/sign_in/profile.dart';

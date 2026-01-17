@@ -30,7 +30,7 @@ class CartVM with ChangeNotifier {
   double get totalAmount {
     var total = 0.0;
     _items.forEach((key, cartItem) {
-      total += cartItem.price * cartItem.quantity;
+      total += (cartItem.price * cartItem.quantity) - (cartItem.discount * cartItem.quantity);
     });
     return total;
   }
@@ -144,6 +144,9 @@ class CartVM with ChangeNotifier {
           id: existing.id,
           title: existing.title,
           price: existing.price,
+          discount: existing.discount,
+          totalPrice: existing.totalPrice,
+          category: existing.category,
           imageUrl: existing.imageUrl,
           quantity: existing.quantity + 1,
         ),
@@ -157,7 +160,10 @@ class CartVM with ChangeNotifier {
           title: product.name, // Mapped from Product.name
           price: product.sellingPrice, // Mapped from Product.sellingPrice
           imageUrl: product.imageUrl,
+          discount: product.discount,
+          category: product.categoryName,
           quantity: 1,
+              totalPrice: product.totalPrice,
         ),
       );
     }
@@ -175,7 +181,10 @@ class CartVM with ChangeNotifier {
           id: existing.id,
           title: existing.title,
           price: existing.price,
+          discount: existing.discount,
+          totalPrice: existing.totalPrice,
           imageUrl: existing.imageUrl,
+          category: existing.category,
           quantity: existing.quantity - 1,
         ),
       );
@@ -196,7 +205,10 @@ class CartVM with ChangeNotifier {
           id: existing.id,
           title: existing.title,
           price: existing.price,
+          discount: existing.discount,
+          totalPrice: existing.totalPrice,
           imageUrl: existing.imageUrl,
+          category: existing.category,
           quantity: existing.quantity + 1,
         ),
       );

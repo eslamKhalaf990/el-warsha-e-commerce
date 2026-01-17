@@ -14,6 +14,8 @@ class Product {
   String description;
   double buyingPrice;
   double sellingPrice;
+  double discount;
+  double totalPrice;
   String imageUrl;
   String sku;
   String quantity;
@@ -28,6 +30,8 @@ class Product {
     required this.description,
     required this.buyingPrice,
     required this.sellingPrice,
+    required this.discount,
+    required this.totalPrice,
     required this.imageUrl,
     required this.sku,
     required this.quantity,
@@ -43,6 +47,8 @@ class Product {
     description: json["description"],
     buyingPrice: json["buyingPrice"]?.toDouble(),
     sellingPrice: json["sellingPrice"]?.toDouble(),
+    discount: json["discount"]?.toDouble(),
+    totalPrice: json["totalPrice"]?.toDouble(),
     imageUrl: json["imageUrl"],
     sku: json["sku"],
     quantity: json["quantity"],
