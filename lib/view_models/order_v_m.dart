@@ -51,8 +51,6 @@ class OrderVM extends ChangeNotifier {
     return ordersList;
   }
 
-
-
   void toggleLogin(bool state) {
     isLogin = state;
     notifyListeners();

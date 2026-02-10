@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:warsha_commerce/models/cart.dart';
 import 'package:warsha_commerce/models/create_order_request.dart';
@@ -107,7 +105,6 @@ class CartVM with ChangeNotifier {
     );
 
     try {
-
 
       // 4. Send Request (toJson handles the formatting now)
       final response = await _ordersService.addOrder(requestModel, _userViewModel.token, images: images);

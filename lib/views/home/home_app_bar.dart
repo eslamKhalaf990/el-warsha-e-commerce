@@ -96,7 +96,7 @@ class _WarshaAppBarState extends State<WarshaAppBar> {
       key: const ValueKey('defaultRow'), // Unique key for animation
       children: [
         Image.asset(
-          "assets/images/logo.jpg",
+          "assets/images/logo-no-back.png",
           height: 40,
           fit: BoxFit.contain,
         ),
