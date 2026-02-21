@@ -9,16 +9,28 @@ import 'package:warsha_commerce/utils/navigator.dart';
 import 'package:warsha_commerce/view_models/customers_v_m.dart';
 import 'package:warsha_commerce/view_models/user_v_m.dart';
 
-class SignUpForm extends StatelessWidget {
+class SignUpForm extends StatefulWidget {
   SignUpForm({super.key});
 
+  @override
+  State<SignUpForm> createState() => _SignUpFormState();
+}
+
+class _SignUpFormState extends State<SignUpForm> {
   final _formKey = GlobalKey<FormState>();
+
   final TextEditingController _nameController = TextEditingController();
+
   final TextEditingController _emailController = TextEditingController();
+
   final TextEditingController _phoneController = TextEditingController();
+
   final TextEditingController _secondPhoneController = TextEditingController();
+
   final TextEditingController _passwordController = TextEditingController();
+
   final TextEditingController _addressController = TextEditingController();
+
   final TextEditingController _cityController = TextEditingController();
 
   @override
@@ -91,8 +103,6 @@ class SignUpForm extends StatelessWidget {
             hint: '01xxxxxxxxx',
             icon: Iconsax.call_copy,
             inputType: TextInputType.phone,
-            validator: (value) =>
-            value!.length < 11 ? 'يرجى إدخال رقم هاتف صحيح' : null,
             context: context,
           ),
           const SizedBox(height: 20),
@@ -115,20 +125,23 @@ class SignUpForm extends StatelessWidget {
           // City
           _buildLabel('المحافظة / المدينة'),
           const SizedBox(height: 8),
-          _buildTextField(
-            controller: _cityController,
-            hint: 'مثال: القاهرة، الجيزة',
+          _buildDropdownField(
+            value: _cityController.text ?? '',
+            items: Governorates.shippingRates.keys.toList(),
+            hint: 'اختر المدينة',
             icon: Iconsax.location_copy,
+            context: context,
+            onChanged: (newValue) {
+              setState(() {
+                _cityController.text = newValue!;
+              });
+            },
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'يرجى إدخال المدينة';
-              }
-              if (!Governorates.isValid(value)) {
-                return 'يرجى إدخال محافظة صحيحة (مثال: القاهرة)';
+                return 'يرجى اختيار المدينة';
               }
               return null;
             },
-            context: context,
           ),
           const SizedBox(height: 20),
 
@@ -262,6 +275,66 @@ class SignUpForm extends StatelessWidget {
           borderSide: const BorderSide(color: Colors.red, width: 1),
         ),
       ),
+    );
+  }
+
+  Widget _buildDropdownField({
+    required String value,
+    required List<String> items,
+    required String hint,
+    required IconData icon,
+    required void Function(String?) onChanged,
+    String? Function(String?)? validator,
+    required BuildContext context,
+  }) {
+    return DropdownButtonFormField<String>(
+      initialValue: items.contains(value) && value.isNotEmpty ? value : null,
+      items: items.map((String city) {
+        return DropdownMenuItem<String>(
+          value: city,
+          child: Text(city, style: const TextStyle(fontSize: 15)),
+        );
+      }).toList(),
+      onChanged: onChanged,
+      validator: validator,
+      icon: Icon(Icons.arrow_drop_down, color: Theme.of(context).colorScheme.tertiary),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(
+          color: Theme.of(context).colorScheme.tertiary,
+          fontSize: 14,
+        ),
+        prefixIcon: Icon(
+          icon,
+          color: Theme.of(context).colorScheme.tertiary,
+          size: 22,
+        ),
+        filled: true,
+        fillColor: Theme.of(context).colorScheme.tertiary.withAlpha(10),
+        contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+        // Set Border Radius to 25 as requested
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(25),
+          borderSide: BorderSide(color: Theme.of(context).colorScheme.tertiary),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(25),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.tertiary.withAlpha(0),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(25),
+          borderSide: const BorderSide(color: Color(0xFF222222), width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(25),
+          borderSide: const BorderSide(color: Colors.red, width: 1),
+        ),
+      ),
+      // Ensures the dropdown menu itself follows the rounded theme
+      dropdownColor: Theme.of(context).canvasColor,
+      borderRadius: BorderRadius.circular(25),
     );
   }
 }

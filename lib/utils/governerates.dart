@@ -43,7 +43,8 @@ class Governorates {
     }
 
   * */
-  static const Map<String, double> _shippingRates = {
+
+  static const Map<String, double> shippingRates = {
     'القاهرة': 65.0,
     'الجيزة': 65.0,
     'القليوبية': 65.0,
@@ -79,19 +80,19 @@ class Governorates {
     'الوادي الجديد': 120.0,
   };
 
-  static List<String> get list => _shippingRates.keys.toList();
+  static List<String> get list => shippingRates.keys.toList();
 
   static bool isValid(String? input) {
     if (input == null || input.isEmpty) return false;
-    return _shippingRates.containsKey(_normalize(input));
+    return shippingRates.containsKey(_normalize(input));
   }
 
   static double getDeliveryPrice(String city) {
     String normalizedCity = _normalize(city);
-    if (!_shippingRates.containsKey(normalizedCity)) {
-      return 100;
+    if (!shippingRates.containsKey(normalizedCity)) {
+      return 65;
     }
-    return _shippingRates[normalizedCity]!;
+    return shippingRates[normalizedCity]!;
   }
 
   static String _normalize(String input) {
@@ -107,6 +108,8 @@ class Governorates {
     if (text == 'الاسكندرية' || text == 'الاسكندريه') return 'الإسكندرية';
     if (text == 'الاسماعيلية' || text == 'الاسماعيليه') return 'الإسماعيلية';
     if (text == 'جيزة') return 'الجيزة';
+    if (text == 'الجيزه') return 'الجيزة';
+    if (text == 'القاهره') return 'القاهرة';
 
     return text;
   }

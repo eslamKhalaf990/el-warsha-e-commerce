@@ -14,30 +14,6 @@ import 'base_url.dart';
 
 class OrdersService {
 
-  // Future<http.Response> addOrder(CreateOrderRequest orderRequest, String token) async {
-  //   print("addOrder ${orderRequest.toJson()}");
-  //   final response = await http
-  //       .post(
-  //     Uri.parse(Baseurl.placeOrderAPI),
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'Accept': 'application/json',
-  //       "Authorization": 'Bearer $token',
-  //     },
-  //     body: jsonEncode(orderRequest.toJson()),
-  //   )
-  //       .timeout(const Duration(seconds: Constants.TIMEOUT));
-  //
-  //   if (response.statusCode == 201 || response.statusCode == 200) {
-  //
-  //   } else {
-  //     // If the server didn't create the order, throw an error
-  //     throw Exception(
-  //         'Failed to add order: ${response.statusCode} ${response.body}');
-  //   }
-  //   return response;
-  // }
-
   Future<http.Response> addOrder(
       CreateOrderRequest orderRequest,
       String token, {
@@ -86,7 +62,7 @@ class OrdersService {
         return response;
       } else {
         throw Exception(
-            'Failed to add order: ${response.statusCode} ${response.body}');
+            response.body);
       }
     } catch (e) {
       throw Exception('Error sending request: $e');

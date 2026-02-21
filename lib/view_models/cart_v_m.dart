@@ -9,6 +9,7 @@ import 'package:warsha_commerce/models/order_response.dart';
 import 'package:warsha_commerce/models/product_model.dart';
 import 'package:warsha_commerce/services/base_url.dart';
 import 'package:warsha_commerce/services/orders_service.dart';
+import 'package:warsha_commerce/utils/navigator.dart';
 import 'package:warsha_commerce/view_models/user_v_m.dart';
 
 class CartVM with ChangeNotifier {
@@ -122,6 +123,18 @@ class CartVM with ChangeNotifier {
       }
     } catch (error) {
       print("Network Error: $error");
+      if(error.toString().contains("Insufficient stock")){
+        ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+          SnackBar(
+            content: Text(
+              "لا يوجد كميات من هذا المنتج في المخزون الان",
+            ),
+            duration: const Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.red.shade600,
+          ),
+        );
+      }
       _isLoading = false;
       notifyListeners();
       return null;
