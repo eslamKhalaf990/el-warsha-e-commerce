@@ -8,6 +8,7 @@ import 'package:warsha_commerce/utils/governerates.dart';
 import 'package:warsha_commerce/utils/navigator.dart';
 import 'package:warsha_commerce/view_models/customers_v_m.dart';
 import 'package:warsha_commerce/view_models/user_v_m.dart';
+import 'package:warsha_commerce/views/sign_in/verify_otp.dart';
 
 class SignUpForm extends StatefulWidget {
   SignUpForm({super.key});
@@ -20,17 +21,11 @@ class _SignUpFormState extends State<SignUpForm> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _nameController = TextEditingController();
-
   final TextEditingController _emailController = TextEditingController();
-
   final TextEditingController _phoneController = TextEditingController();
-
   final TextEditingController _secondPhoneController = TextEditingController();
-
   final TextEditingController _passwordController = TextEditingController();
-
   final TextEditingController _addressController = TextEditingController();
-
   final TextEditingController _cityController = TextEditingController();
 
   @override
@@ -126,7 +121,7 @@ class _SignUpFormState extends State<SignUpForm> {
           _buildLabel('المحافظة / المدينة'),
           const SizedBox(height: 8),
           _buildDropdownField(
-            value: _cityController.text ?? '',
+            value: _cityController.text,
             items: Governorates.shippingRates.keys.toList(),
             hint: 'اختر المدينة',
             icon: Iconsax.location_copy,
@@ -160,8 +155,7 @@ class _SignUpFormState extends State<SignUpForm> {
           const SizedBox(height: 32),
 
           Consumer<UserViewModel>(
-            builder: (context, userVM, child) => // Inside SignUpForm -> build -> Column -> Consumer<CustomerVM> -> DefaultButton
-            DefaultButton(
+            builder: (context, userVM, child) => DefaultButton(
               onTap: () async {
                 if (_formKey.currentState!.validate()) {
                   final state = await userVM.addCustomer(
@@ -175,24 +169,36 @@ class _SignUpFormState extends State<SignUpForm> {
                     _passwordController.text,
                   );
 
+                  if (!context.mounted) return;
+
                   if (state == "customer_added") {
-                    // Success Feedback
-                    ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+                    ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('تم إنشاء الحساب بنجاح، يمكنك متابعة طلبك'), // Account created
-                        backgroundColor: Theme.of(navigatorKey.currentContext!).colorScheme.tertiary,
+                        content: const Text(
+                            'تم إنشاء الحساب بنجاح، يمكنك متابعة طلبك'),
+                        backgroundColor: Theme.of(context).colorScheme.tertiary,
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
-                    Provider.of<TimelineController>(navigatorKey.currentContext!, listen: false).changePage(1);
-
-                    // Switch to login tab
-                    // userVM.toggleLogin(true);
-                  } else {
-                    // Optional: Error Feedback
-                    ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
-                      SnackBar(
-                        content: Text("لم يتم إنشاء الحساب"), // Error message
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            VerifyOtp(email: _emailController.text),
+                      ),
+                    );
+                  } else if (state == "customer_already_exists"){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("الحساب موجود بالفعل"),
+                        backgroundColor: Colors.red,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  }  else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("لم يتم إنشاء الحساب"),
                         backgroundColor: Colors.red,
                         behavior: SnackBarBehavior.floating,
                       ),
@@ -297,7 +303,8 @@ class _SignUpFormState extends State<SignUpForm> {
       }).toList(),
       onChanged: onChanged,
       validator: validator,
-      icon: Icon(Icons.arrow_drop_down, color: Theme.of(context).colorScheme.tertiary),
+      icon: Icon(Icons.arrow_drop_down,
+          color: Theme.of(context).colorScheme.tertiary),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(
@@ -311,30 +318,29 @@ class _SignUpFormState extends State<SignUpForm> {
         ),
         filled: true,
         fillColor: Theme.of(context).colorScheme.tertiary.withAlpha(10),
-        contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
-        // Set Border Radius to 25 as requested
+        contentPadding:
+        const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(25),
+          borderRadius: Constants.BORDER_RADIUS_5,
           borderSide: BorderSide(color: Theme.of(context).colorScheme.tertiary),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(25),
+          borderRadius: Constants.BORDER_RADIUS_5,
           borderSide: BorderSide(
             color: Theme.of(context).colorScheme.tertiary.withAlpha(0),
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(25),
+          borderRadius: Constants.BORDER_RADIUS_5,
           borderSide: const BorderSide(color: Color(0xFF222222), width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(25),
+          borderRadius: Constants.BORDER_RADIUS_5,
           borderSide: const BorderSide(color: Colors.red, width: 1),
         ),
       ),
-      // Ensures the dropdown menu itself follows the rounded theme
       dropdownColor: Theme.of(context).canvasColor,
-      borderRadius: BorderRadius.circular(25),
+      borderRadius: Constants.BORDER_RADIUS_5,
     );
   }
 }

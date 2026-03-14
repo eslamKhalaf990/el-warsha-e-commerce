@@ -5,6 +5,10 @@ class Baseurl {
 
   /// =============== Authentication APIs ============== ///
   static String loginApi = '${baseURL}auth/customerLogin';
+  static String verifyOtp = '${baseURL}auth/verifyCode';
+  static String changePasswordApi = '${baseURL}auth/changePassword';
+  static String forgotPasswordApi = '${baseURL}auth/forgotPassword';
+  static String resetPasswordApi = '${baseURL}auth/resetPassword';
   /// =============== Authentication APIs ============== ///
 
   /// ===============   Customers APIs    ============== ///

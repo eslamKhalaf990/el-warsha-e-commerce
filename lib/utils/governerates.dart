@@ -96,7 +96,7 @@ class Governorates {
   static double getDeliveryPrice(String city) {
     String normalizedCity = _normalize(city);
     if (!shippingRates.containsKey(normalizedCity)) {
-      return 65;
+      return 80;
     }
     return shippingRates[normalizedCity]!;
   }

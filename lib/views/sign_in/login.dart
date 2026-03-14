@@ -3,9 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:warsha_commerce/controllers/time_line.dart';
 import 'package:warsha_commerce/utils/const_values.dart';
 import 'package:warsha_commerce/utils/default_button.dart';
-import 'package:warsha_commerce/utils/navigator.dart';
 import 'package:warsha_commerce/view_models/user_v_m.dart';
-
+import 'package:warsha_commerce/views/sign_in/forgot_password.dart';
+import 'package:warsha_commerce/views/sign_in/verify_otp.dart';
 
 class LoginForm extends StatelessWidget {
   LoginForm({super.key});
@@ -69,7 +69,12 @@ class LoginForm extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
+                );
+              },
               child: Text(
                 'نسيت كلمة المرور؟',
                 style: TextStyle(color: Colors.grey[700], fontSize: 13),
@@ -80,38 +85,36 @@ class LoginForm extends StatelessWidget {
           const SizedBox(height: 24),
 
           Consumer2<UserViewModel, TimelineController>(
-            builder: (context, userVM, timeline, child) =>
-            DefaultButton(
+            builder: (context, userVM, timeline, child) => DefaultButton(
               onTap: () async {
-                // 1. Make this async
                 if (_formKey.currentState!.validate()) {
-                  // 2. Await the result (Assuming login returns Future<bool>)
                   final state = await userVM.login(
-                      _emailController.text,
-                      _passwordController.text
-                  );
+                      _emailController.text, _passwordController.text);
 
-                  // 3. Check if widget is still on screen before showing snackbar
                   if (!context.mounted) return;
 
                   if (state == "logged_in") {
-
-                    // Success Feedback
-                    ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+                    ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('تم تسجيل الدخول بنجاح'), // Logged in successfully
+                        content: const Text('تم تسجيل الدخول بنجاح'),
                         backgroundColor: Theme.of(context).colorScheme.tertiary,
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
 
-                    Navigator.pop(context);
-                    // Navigate to home or next page here if needed
+                    Navigator.pop(context); // Exit auth flow
+                  } else if(state == "otp_sent"){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            VerifyOtp(email: _emailController.text),
+                      ),
+                    );
                   } else {
-                    // Failure Feedback
-                    ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+                    ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('فشل تسجيل الدخول، تأكد من البيانات'), // Login failed
+                        content: Text('فشل تسجيل الدخول، تأكد من البيانات'),
                         backgroundColor: Colors.red,
                         behavior: SnackBarBehavior.floating,
                       ),
