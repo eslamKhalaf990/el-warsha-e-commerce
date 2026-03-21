@@ -70,24 +70,12 @@ class UserViewModel extends ChangeNotifier {
         password,
       );
 
-      // Handle successful registration (assuming backend returns the user/token)
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = jsonDecode(response.body);
-
-        token = data["token"] ?? "-";
-        this.address = data["address"] ?? "-";
-        this.name = data["name"] ?? "-";
-        this.phone = data["phone"] ?? "-";
-        this.email = data["email"] ?? "-";
-        this.governorate = data["governorate"] ?? "-";
-
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('user_data', jsonEncode(data));
 
         status = "customer_added";
         notifyListeners();
         debugPrint("Customer added successfully");
-      } else if (response.body.contains("Duplicate") || response.statusCode == 409) {
+      } else if (response.body.contains("Duplicate") || response.statusCode == 409 || response.statusCode == 400) {
         status = "customer_already_exists";
         debugPrint("Customer already exists");
       } else {

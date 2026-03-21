@@ -93,28 +93,29 @@ class _ProductCardState extends State<ProductCard>
                   fit: StackFit.expand,
                   children: [
                     ClipRRect(
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
                       child: Opacity(
                         opacity: isOutOfStock ? 0.6 : 1.0,
                         child: CachedNetworkImage(
-                          imageUrl:
-                              "${Baseurl.baseURLImages}${ImageHelper.extractFileId(widget.product.imageUrl)}",
+                          // Simply combine your base URL and the database path
+                          imageUrl: "${Baseurl.baseURLImages}${widget.product.imageUrl}",
                           fit: BoxFit.cover,
                           memCacheWidth: 400,
-                          placeholder: (context, url) => Center(
+                          placeholder: (context, url) => const Center(
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
                               color: Colors.black87,
                             ),
                           ),
-                          errorWidget: (context, url, error) => const Icon(
+                          errorWidget: (context, url, error) {
+                            return const Icon(
                             Icons.broken_image,
                             color: Colors.grey,
-                          ),
+                            );
+                          },
                         ),
                       ),
                     ),
-
                     // Badge
                     Positioned(
                       top: 8,

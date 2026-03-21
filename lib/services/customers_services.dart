@@ -31,6 +31,7 @@ class CustomerService {
             "city": city,
           })
       ).timeout(const Duration(seconds: Constants.TIMEOUT));
+      print(response.body);
 
     } on TimeoutException {
       throw Exception('The request timed out. Please try again later.');

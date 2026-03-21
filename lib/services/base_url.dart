@@ -1,7 +1,7 @@
 class Baseurl {
-  // static String baseURL = "http://localhost:8080/";
-  static String baseURL = "https://arc-checking-newbie-developmental.trycloudflare.com/";
-  static String baseURLImages = "${baseURL}api/files/";
+  static String baseURL = "http://localhost:8080/";
+  // static String baseURL = "https://arc-checking-newbie-developmental.trycloudflare.com/";
+  static String baseURLImages = "http://67.211.210.15";
 
   /// =============== Authentication APIs ============== ///
   static String loginApi = '${baseURL}auth/customerLogin';

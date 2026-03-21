@@ -50,7 +50,7 @@ class CartItemRow extends StatelessWidget {
             child: ClipRRect(
               borderRadius: Constants.BORDER_RADIUS_5,
               child: Image.network(
-                "${Baseurl.baseURLImages}${ImageHelper.extractFileId(data.image)}",
+                "${Baseurl.baseURLImages}${data.image}",
                 width: isSmallScreen ? 70 : 100, // Smaller image on mobile
                 height: isSmallScreen ? 70 : 100,
                 fit: BoxFit.cover,
