@@ -98,7 +98,8 @@ class _ProductCardState extends State<ProductCard>
                         opacity: isOutOfStock ? 0.6 : 1.0,
                         child: CachedNetworkImage(
                           // Simply combine your base URL and the database path
-                          imageUrl: "${Baseurl.baseURLImages}${widget.product.imageUrl}",
+                          imageUrl:
+                          "${Baseurl.baseURLImages}${ImageHelper.extractFileId(widget.product.imageUrl)}",
                           fit: BoxFit.cover,
                           memCacheWidth: 400,
                           placeholder: (context, url) => const Center(
