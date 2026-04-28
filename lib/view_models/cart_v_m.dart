@@ -72,7 +72,7 @@ class CartVM with ChangeNotifier {
   Future<OrderResponse?> placeOrder({
     double discount = 0.0,
     String paymentMethod = "Cash",
-    String orderSource = "E-Commerce",
+    String orderSource = "e-commerce",
     required String downPayment,
     String bankAccountId = "8",
     String notes = "",
