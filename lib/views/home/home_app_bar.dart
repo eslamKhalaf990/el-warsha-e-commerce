@@ -36,12 +36,114 @@ class _WarshaAppBarState extends State<WarshaAppBar> {
       titleSpacing: 0,
       title: Padding(
         padding: EdgeInsets.symmetric(horizontal: widget.isMobile ? 16.0 : 40.0),
-        // 2. AnimatedSwitcher for smooth transition between Search Bar and Logo
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
           child: _isSearchingMobile && widget.isMobile
               ? _buildMobileSearchRow(context)
               : _buildDefaultRow(context),
+        ),
+      ),
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(60),
+        child: _buildCategorySection(context),
+      ),
+    );
+  }
+
+  Widget _buildCategorySection(BuildContext context) {
+    return Consumer<ProductVM>(
+      builder: (context, vm, child) {
+        if (vm.allCategories == null || vm.allCategories!.isEmpty) {
+          if (vm.isLoading) {
+            return const SizedBox(
+              height: 60,
+              child: Center(
+                  child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Color(0xFF222222)))),
+            );
+          }
+          return const SizedBox.shrink();
+        }
+
+        return Container(
+          height: 60,
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            border: Border(
+              bottom: BorderSide(color: Color(0xFFF1F3F5), width: 1),
+            ),
+          ),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minWidth: MediaQuery.of(context).size.width,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildCategoryChip(
+                      context,
+                      "الكل",
+                      null,
+                      vm.selectedCategoryId == null,
+                    ),
+                    ...vm.allCategories!.map((category) => _buildCategoryChip(
+                          context,
+                          category.name,
+                          category.categoryId,
+                          vm.selectedCategoryId == category.categoryId,
+                        )),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildCategoryChip(
+      BuildContext context, String label, int? id, bool isSelected) {
+    final vm = Provider.of<ProductVM>(context, listen: false);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      child: InkWell(
+        onTap: () => vm.setCategory(id),
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? const Color(0xFF222222) : const Color(0xFF9EA5AD),
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                fontSize: 15,
+                letterSpacing: -0.2,
+              ),
+            ),
+            const SizedBox(height: 6),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOutCubic,
+              height: 2.5,
+              width: isSelected ? 18 : 0,
+              decoration: BoxDecoration(
+                color: const Color(0xFF222222),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -110,9 +212,8 @@ class _WarshaAppBarState extends State<WarshaAppBar> {
                 constraints: const BoxConstraints(maxWidth: 600),
                 height: 48,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: const Color(0xFFF8F9FA),
                   borderRadius: BorderRadius.circular(50),
-                  border: Border.all(color: Colors.grey.shade300),
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: TextFormField(

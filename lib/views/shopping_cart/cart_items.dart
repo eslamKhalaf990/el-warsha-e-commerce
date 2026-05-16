@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:warsha_commerce/utils/const_values.dart';
 import 'package:warsha_commerce/view_models/cart_v_m.dart';
 import 'package:warsha_commerce/view_models/user_v_m.dart';
-import 'cart_item.dart'; // Your UI Widget
-import 'container_style.dart'; // Your UI Widget
+import 'cart_item.dart';
+import 'container_style.dart';
 
 class CartItemData {
   final String name;
@@ -12,7 +12,7 @@ class CartItemData {
   final String size;
   final String category;
   final String color;
-  final int price;
+  final double price;
   final double totalPrice;
   final double discount;
   final int quantity;
@@ -36,123 +36,123 @@ class RightCartColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<CartVM>(context);
-    final userVM = Provider.of<UserViewModel>(context);
     final cartItems = cart.items.values.toList();
     final productIds = cart.items.keys.toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
-        StyledContainer(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-          child: Row(
-            children: [
-
-              Container(
-                width: 20,
-                height: 20,
-                decoration: BoxDecoration(
-                  borderRadius: Constants.BORDER_RADIUS_5,
-                  border: Border.all(
-                    width: 1,
-                    color: Theme.of(context).colorScheme.tertiary,
-                  ),
+        if (cartItems.isNotEmpty)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: Constants.BORDER_RADIUS_5,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
                 ),
-                child: const Icon(
-                  Icons.check,
-                  size: 16,
-                  color: Colors.black,
+              ],
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.shopping_basket_outlined, size: 20),
+                const SizedBox(width: 12),
+                Text(
+                  "سلة التسوق (${cart.itemCount} منتجات)",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
-              ),
-              const SizedBox(width: 15),
-              const Text(
-                "تحديد الكل",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const Spacer(),
-
-              // Delete Action
-              InkWell(
-                onTap: () {
-                  // UX: Confirm before deleting everything
-                  cart.clear();
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.tertiary,
-                    borderRadius: Constants.BORDER_RADIUS_5,
-                  ),
-                  child: Text(
-                    "حذف السلة",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onTertiary,
-                    ),
-                  ),
+                const Spacer(),
+                TextButton.icon(
+                  onPressed: () => cart.clear(),
+                  icon: const Icon(Icons.delete_outline, size: 18, color: Colors.red),
+                  label: const Text("حذف السلة", style: TextStyle(color: Colors.red)),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
 
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
 
-        // --- Cart Items List (Dynamic) ---
         cartItems.isEmpty
-            ? _buildEmptyState()
-            : StyledContainer(
-                child: ListView.separated(
-                  shrinkWrap: true, // Vital when inside a Column
-                  physics:
-                      const NeverScrollableScrollPhysics(), // Let the parent scroll
-                  itemCount: cartItems.length,
-                  separatorBuilder: (ctx, i) => const Divider(height: 40),
-                  itemBuilder: (ctx, i) {
-                    final providerItem = cartItems[i];
-                    final currentId = productIds[i];
+            ? _buildEmptyState(context)
+            : ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: cartItems.length,
+                separatorBuilder: (ctx, i) => const SizedBox(height: 16),
+                itemBuilder: (ctx, i) {
+                  final providerItem = cartItems[i];
+                  final currentId = productIds[i];
 
-                    // 2. Adapter: Convert Provider Model -> UI Model
-                    // We map the data so your existing CartItemRow works without changes
-                    final uiModel = CartItemData(
-                      name: providerItem.title,
-                      category: providerItem.category,
-                      color: "Black",
-                      price: providerItem.price.toInt(),
-                      quantity: providerItem.quantity,
-                      totalPrice: providerItem.totalPrice,
-                      discount: providerItem.discount,
-                      image: providerItem.imageUrl, size: '',
-                    );
+                  final uiModel = CartItemData(
+                    name: providerItem.title,
+                    category: providerItem.category,
+                    color: "أسود",
+                    price: providerItem.price,
+                    quantity: providerItem.quantity,
+                    totalPrice: providerItem.totalPrice,
+                    discount: providerItem.discount,
+                    image: providerItem.imageUrl,
+                    size: 'M',
+                  );
 
-                    return CartItemRow(
+                  return Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: Constants.BORDER_RADIUS_5,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: CartItemRow(
                       data: uiModel,
-                      increment: () {
-                        cart.incrementItemQty(currentId);
-                      },
-                      decrement: () {
-                        cart.decrementItemQty(currentId);
-                      },
-                      removeItem: () {
-                        cart.removeItem(currentId);
-                      },
-                    );
-                  },
-                ),
+                      increment: () => cart.incrementItemQty(currentId),
+                      decrement: () => cart.decrementItemQty(currentId),
+                      removeItem: () => cart.removeItem(currentId),
+                    ),
+                  );
+                },
               ),
       ],
     );
   }
 
-  Widget _buildEmptyState() {
-    return StyledContainer(
-      child: const Padding(
-        padding: EdgeInsets.all(40.0),
-        child: Center(child: Text("السلة فارغة")),
+  Widget _buildEmptyState(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 80),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: Constants.BORDER_RADIUS_5,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.shopping_cart_outlined, size: 80, color: Colors.grey[300]),
+          const SizedBox(height: 24),
+          const Text(
+            "سلة التسوق فارغة",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.grey),
+          ),
+          const SizedBox(height: 32),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF222222),
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+              shape: RoundedRectangleBorder(borderRadius: Constants.BORDER_RADIUS_5),
+            ),
+            child: const Text("ابدأ التسوق الآن", style: TextStyle(color: Colors.white)),
+          ),
+        ],
       ),
     );
   }

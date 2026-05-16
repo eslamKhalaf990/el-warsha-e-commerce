@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:warsha_commerce/utils/const_values.dart';
 import 'package:warsha_commerce/utils/default_button.dart';
+import 'package:warsha_commerce/utils/deafualt_form_field.dart';
 import 'package:warsha_commerce/view_models/user_v_m.dart';
 import 'package:warsha_commerce/views/sign_in/reset_password.dart';
 
@@ -14,22 +15,34 @@ class ForgotPasswordPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: const Color(0xFF222222),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Container(
-              constraints: const BoxConstraints(maxWidth: 600),
+              constraints: const BoxConstraints(maxWidth: 500),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(50),
+                borderRadius: Constants.BORDER_RADIUS_5,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(10),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
               ),
-              padding: EdgeInsets.all(25),
+              padding: const EdgeInsets.all(32),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -41,26 +54,26 @@ class ForgotPasswordPage extends StatelessWidget {
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF222222),
+                        letterSpacing: -0.5,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'أدخل بريدك الإلكتروني لتلقي رمز التحقق وتعيين كلمة مرور جديدة',
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600], height: 1.5),
                     ),
                     const SizedBox(height: 32),
 
                     // Email Field
                     _buildLabel('البريد الإلكتروني'),
                     const SizedBox(height: 8),
-                    _buildTextField(
+                    DefaultForm(
                       controller: _emailController,
-                      hint: 'example@email.com',
+                      title: 'example@email.com',
                       icon: Icons.email_outlined,
                       inputType: TextInputType.emailAddress,
-                      validator: (value) =>
+                      validation: (value) =>
                           value!.isEmpty ? 'يرجى إدخال البريد الإلكتروني' : null,
-                      context: context,
                     ),
 
                     const SizedBox(height: 32),
@@ -75,9 +88,9 @@ class ForgotPasswordPage extends StatelessWidget {
 
                             if (state == "otp_sent") {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: const Text('تم إرسال رمز التحقق إلى بريدك الإلكتروني'),
-                                  backgroundColor: Theme.of(context).colorScheme.tertiary,
+                                const SnackBar(
+                                  content: Text('تم إرسال رمز التحقق إلى بريدك الإلكتروني'),
+                                  backgroundColor: Colors.black,
                                   behavior: SnackBarBehavior.floating,
                                 ),
                               );
@@ -118,65 +131,9 @@ class ForgotPasswordPage extends StatelessWidget {
     return Text(
       text,
       style: const TextStyle(
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.bold,
         fontSize: 14,
-        color: Color(0xFF222222),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hint,
-    required IconData icon,
-    TextInputType inputType = TextInputType.text,
-    bool isPassword = false,
-    int maxLines = 1,
-    String? Function(String?)? validator,
-    required BuildContext context,
-  }) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: inputType,
-      obscureText: isPassword,
-      maxLines: maxLines,
-      validator: validator,
-      style: const TextStyle(fontSize: 15),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: TextStyle(
-          color: Theme.of(context).colorScheme.tertiary,
-          fontSize: 14,
-        ),
-        prefixIcon: Icon(
-          icon,
-          color: Theme.of(context).colorScheme.tertiary,
-          size: 22,
-        ),
-        filled: true,
-        fillColor: Theme.of(context).colorScheme.tertiary.withAlpha(10),
-        contentPadding: EdgeInsets.symmetric(
-          vertical: maxLines > 1 ? 16 : 18,
-          horizontal: 16,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: Constants.BORDER_RADIUS_5,
-          borderSide: BorderSide(color: Theme.of(context).colorScheme.tertiary),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: Constants.BORDER_RADIUS_5,
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.tertiary.withAlpha(0),
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: Constants.BORDER_RADIUS_5,
-          borderSide: const BorderSide(color: Color(0xFF222222), width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: Constants.BORDER_RADIUS_5,
-          borderSide: const BorderSide(color: Colors.red, width: 1),
-        ),
+        color: Color(0xFF495057),
       ),
     );
   }

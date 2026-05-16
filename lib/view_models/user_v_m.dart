@@ -10,6 +10,7 @@ class UserViewModel extends ChangeNotifier {
   final UserService _userService;
 
   // State variables
+  String id = "-";
   String token = "-";
   String address = "-";
   String name = "-";
@@ -29,6 +30,7 @@ class UserViewModel extends ChangeNotifier {
     if (userDataString != null) {
       try {
         final Map<String, dynamic> userMap = jsonDecode(userDataString);
+        id = userMap['id']?.toString() ?? "-";
         token = userMap['token'] ?? "-";
         address = userMap['address'] ?? "-";
         name = userMap['name'] ?? "-";
@@ -38,6 +40,11 @@ class UserViewModel extends ChangeNotifier {
 
         notifyListeners();
         debugPrint("User state restored from storage");
+        
+        // Fetch fresh data if token is valid
+        if (token != "-" && id != "-") {
+          fetchCustomerInfo();
+        }
       } catch (e) {
         debugPrint("Error parsing saved user data: $e");
       }
@@ -103,7 +110,8 @@ class UserViewModel extends ChangeNotifier {
         // Active customer logged in successfully
         final data = jsonDecode(response.body);
 
-        // Map keys to match Java record: CustomerLogin(token, address, name, phone, email, governorate)
+        // Map keys to match Java record: CustomerLogin(id, token, address, name, phone, email, governorate)
+        id = data["id"]?.toString() ?? "-";
         token = data["token"] ?? "-";
         address = data["address"] ?? "-";
         name = data["name"] ?? "-";
@@ -117,6 +125,9 @@ class UserViewModel extends ChangeNotifier {
         status = "logged_in";
         notifyListeners();
         debugPrint("Logged in and data persisted");
+        
+        // Optionally fetch detailed info immediately
+        fetchCustomerInfo();
 
       } else if (response.statusCode == 403 && response.body.contains("Account needs verification")) {
         // Pending customer triggers OTP flow (HttpStatus.FORBIDDEN in Java)
@@ -242,6 +253,7 @@ class UserViewModel extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('user_data');
 
+    id = "-";
     token = "-";
     address = "-";
     name = "-";
@@ -251,6 +263,34 @@ class UserViewModel extends ChangeNotifier {
 
     notifyListeners();
     debugPrint("State cleared");
+  }
+
+  // 9. Fetch Customer Info
+  Future<void> fetchCustomerInfo() async {
+    if (id == "-" || token == "-") return;
+    
+    try {
+      _setLoading(true);
+      final response = await _userService.getCustomerInfo(id, token);
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        
+        // Update state with fresh data from endpoint
+        name = data["fullName"] ?? data["name"] ?? name;
+        address = data["address"] ?? address;
+        phone = data["phone"] ?? phone;
+        email = data["email"] ?? email;
+        governorate = data["governorate"] ?? governorate;
+        
+        notifyListeners();
+        debugPrint("Customer info updated from API");
+      }
+    } catch (e) {
+      debugPrint("Error fetching customer info: $e");
+    } finally {
+      _setLoading(false);
+    }
   }
 
   // Helper method to handle loading state

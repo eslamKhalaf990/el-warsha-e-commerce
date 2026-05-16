@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:warsha_commerce/utils/const_values.dart';
 import 'package:warsha_commerce/utils/default_button.dart';
+import 'package:warsha_commerce/utils/deafualt_form_field.dart';
 import 'package:warsha_commerce/view_models/user_v_m.dart';
 
 class ResetPasswordPage extends StatefulWidget {
@@ -20,6 +21,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final List<FocusNode> _otpFocusNodes = List.generate(6, (_) => FocusNode());
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -39,22 +41,34 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: const Color(0xFF222222),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Container(
-              constraints: const BoxConstraints(maxWidth: 600),
+              constraints: const BoxConstraints(maxWidth: 500),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(50),
+                borderRadius: Constants.BORDER_RADIUS_5,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(10),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
               ),
-              padding: EdgeInsets.all(25),
+              padding: const EdgeInsets.all(32),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -66,20 +80,18 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF222222),
+                        letterSpacing: -0.5,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'أدخل الرمز المرسل إلى ${widget.email} وكلمة المرور الجديدة',
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600], height: 1.5),
                     ),
                     const SizedBox(height: 32),
 
                     // OTP Row
-                    const Text(
-                      'رمز التحقق',
-                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                    ),
+                    _buildLabel('رمز التحقق'),
                     const SizedBox(height: 12),
                     Directionality(
                       textDirection: TextDirection.ltr,
@@ -93,34 +105,40 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     // New Password
                     _buildLabel('كلمة المرور الجديدة'),
                     const SizedBox(height: 8),
-                    _buildTextField(
+                    DefaultForm(
                       controller: _newPasswordController,
-                      hint: '••••••••',
-                      icon: Icons.lock_reset,
-                      isPassword: true,
-                      validator: (value) {
+                      title: '••••••••',
+                      icon: Icons.lock_outline,
+                      isPassword: _obscurePassword,
+                      validation: (value) {
                         if (value!.isEmpty) return 'يرجى إدخال كلمة المرور';
                         if (value.length < 6) return 'يجب أن تكون 6 أحرف على الأقل';
                         return null;
                       },
-                      context: context,
                     ),
                     const SizedBox(height: 20),
 
                     // Confirm Password
                     _buildLabel('تأكيد كلمة المرور'),
                     const SizedBox(height: 8),
-                    _buildTextField(
+                    DefaultForm(
                       controller: _confirmPasswordController,
-                      hint: '••••••••',
-                      icon: Icons.lock_reset,
-                      isPassword: true,
-                      validator: (value) {
+                      title: '••••••••',
+                      icon: Icons.lock_outline,
+                      isPassword: _obscurePassword,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                          size: 20,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                      ),
+                      validation: (value) {
                         if (value!.isEmpty) return 'يرجى تأكيد كلمة المرور';
                         if (value != _newPasswordController.text) return 'كلمات المرور غير متطابقة';
                         return null;
                       },
-                      context: context,
                     ),
 
                     const SizedBox(height: 32),
@@ -131,7 +149,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           if (_formKey.currentState!.validate()) {
                             if (_otpCode.length < 6) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('يرجى إدخال رمز التحقق كاملاً')),
+                                const SnackBar(
+                                  content: Text('يرجى إدخال رمز التحقق كاملاً'),
+                                  backgroundColor: Colors.red,
+                                  behavior: SnackBarBehavior.floating,
+                                ),
                               );
                               return;
                             }
@@ -146,9 +168,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
                             if (state == "password_reset") {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: const Text('تم تغيير كلمة المرور بنجاح، يمكنك تسجيل الدخول الآن'),
-                                  backgroundColor: Theme.of(context).colorScheme.tertiary,
+                                const SnackBar(
+                                  content: Text('تم تغيير كلمة المرور بنجاح، يمكنك تسجيل الدخول الآن'),
+                                  backgroundColor: Colors.black,
                                   behavior: SnackBarBehavior.floating,
                                 ),
                               );
@@ -183,24 +205,32 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
   Widget _buildOtpBox(int index) {
     return SizedBox(
-      width: 55,
-      height: 55,
+      width: 50,
+      height: 60,
       child: TextFormField(
         controller: _otpControllers[index],
         focusNode: _otpFocusNodes[index],
         keyboardType: TextInputType.number,
         textAlign: TextAlign.center,
         maxLength: 1,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF222222)),
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         decoration: InputDecoration(
           counterText: "",
           filled: true,
-          fillColor: Theme.of(context).colorScheme.tertiary.withAlpha(10),
-          border: OutlineInputBorder(borderRadius: Constants.BORDER_RADIUS_5),
+          fillColor: const Color(0xFFF8F9FA),
+          contentPadding: EdgeInsets.zero,
+          border: OutlineInputBorder(
+            borderRadius: Constants.BORDER_RADIUS_5,
+            borderSide: const BorderSide(color: Color(0xFFE9ECEF)),
+          ),
           enabledBorder: OutlineInputBorder(
             borderRadius: Constants.BORDER_RADIUS_5,
-            borderSide: const BorderSide(color: Colors.transparent),
+            borderSide: const BorderSide(color: Color(0xFFE9ECEF)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: Constants.BORDER_RADIUS_5,
+            borderSide: const BorderSide(color: Color(0xFF222222), width: 1.5),
           ),
         ),
         onChanged: (value) {
@@ -218,32 +248,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   Widget _buildLabel(String text) {
     return Text(
       text,
-      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Color(0xFF222222)),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hint,
-    required IconData icon,
-    bool isPassword = false,
-    String? Function(String?)? validator,
-    required BuildContext context,
-  }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: isPassword,
-      validator: validator,
-      decoration: InputDecoration(
-        hintText: hint,
-        prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.tertiary, size: 22),
-        filled: true,
-        fillColor: Theme.of(context).colorScheme.tertiary.withAlpha(10),
-        border: OutlineInputBorder(borderRadius: Constants.BORDER_RADIUS_5),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: Constants.BORDER_RADIUS_5,
-          borderSide: const BorderSide(color: Colors.transparent),
-        ),
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 14,
+        color: Color(0xFF495057),
       ),
     );
   }

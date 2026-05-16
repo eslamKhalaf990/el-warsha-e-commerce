@@ -15,7 +15,6 @@ import 'package:warsha_commerce/views/shopping_cart/container_style.dart';
 class Payment extends StatefulWidget {
   const Payment({super.key});
 
-
   @override
   State<Payment> createState() => _PaymentState();
 }
@@ -23,7 +22,6 @@ class Payment extends StatefulWidget {
 class _PaymentState extends State<Payment> {
   String selectedPaymentMethod = 'cash';
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
 
   // Credit card fields
   final TextEditingController cardHolderController = TextEditingController();
@@ -48,119 +46,120 @@ class _PaymentState extends State<Payment> {
 
   @override
   Widget build(BuildContext context) {
-    return
-       SingleChildScrollView(
-        child: Center(
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 600),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Form(
-                key: formKey,
-                child: Column(
-                  children: [
+    return SingleChildScrollView(
+      child: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Form(
+              key: formKey,
+              child: Column(
+                children: [
+                  // Payment Methods Section
+                  StyledContainer(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "طريقة الدفع",
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
 
-                    // Payment Methods Section
-                    StyledContainer(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "طريقة الدفع",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
+                        // Cash on Delivery Option
+                        _buildPaymentOption(
+                          icon: Iconsax.money,
+                          title: "الدفع مقدما",
+                          subtitle:
+                              " الدفع مقدما عن طريق انستا باي او فودافون كاش",
+                          value: 'cash',
+                        ),
+                        const SizedBox(height: 15),
+
+                        // Down payment
+                        TextFormField(
+                          keyboardType: TextInputType.number,
+                          onChanged: (value) {
+                            try {
+                              double.parse(value);
+                              setState(() {
+                                downPaymentController.text = value;
+                              });
+                            } catch (e) {
+                              setState(() {});
+                            }
+                          },
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.money),
+                            border: OutlineInputBorder(
+                              borderRadius: Constants.BORDER_RADIUS_5,
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade100,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 20),
-
-                          // Cash on Delivery Option
-                          _buildPaymentOption(
-                            icon: Iconsax.money,
-                            title: "الدفع مقدما",
-                            subtitle: " الدفع مقدما عن طريق انستا باي او فودافون كاش",
-                            value: 'cash',
-                          ),
-                          const SizedBox(height: 15),
-
-                          // Down payment
-                          TextFormField(
-                            keyboardType: TextInputType.number,
-                            onChanged: (value){
-                              try {
-                                double.parse(value);
-                                setState(() {
-                                  downPaymentController.text = value;
-                                });
-                              }
-                              catch(e){
-                                setState(() {
-                                });
-                              }
-                            },
-                            decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.money),
-                              border: OutlineInputBorder(
-                                borderRadius: Constants.BORDER_RADIUS_5,
-                                borderSide: BorderSide(color: Colors.grey.shade100),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: Constants.BORDER_RADIUS_5,
+                              borderSide: BorderSide(
+                                color: Theme.of(context).colorScheme.tertiary,
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: Constants.BORDER_RADIUS_5,
-                                borderSide: BorderSide(
-                                  color: Theme.of(context).colorScheme.tertiary,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: Constants.BORDER_RADIUS_5,
-                                borderSide: BorderSide(color: Colors.grey.shade300),
-                              ),
-                              labelText: "اكتب قيمة الدفع المقدم",
-                              labelStyle: TextStyle(color: Colors.grey),
-                              hintText: "مثال: 100",
-                              suffix: Text("جنيه"),
                             ),
-                            validator: (value) {
-
-                              try {
-                                if (value == null || value.isEmpty){
-                                  return "ادخل قيمة صالحة";
-                                }
-                                else if(double.parse(value) < 50.0){
-                                  return "اقل قيمة صالحة هي 50 جنيه";
-                                }
-                              }
-                              catch(e){
-
-                                return "مسموح بارقام فقط";
-                              }
-                              return null;
-                            },
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: Constants.BORDER_RADIUS_5,
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade300,
+                              ),
+                            ),
+                            labelText: "اكتب قيمة الدفع المقدم",
+                            labelStyle: TextStyle(color: Colors.grey),
+                            hintText: "مثال: 100",
+                            suffix: Text("جنيه"),
                           ),
+                          validator: (value) {
+                            try {
+                              if (value == null || value.isEmpty) {
+                                return "ادخل قيمة صالحة";
+                              } else if (double.parse(value) < 50.0) {
+                                return "اقل قيمة صالحة هي 50 جنيه";
+                              }
+                            } catch (e) {
+                              return "مسموح بارقام فقط";
+                            }
+                            return null;
+                          },
+                        ),
 
-                          const SizedBox(height: 15),
+                        const SizedBox(height: 15),
 
-                          // Credit Card Option
-                          _buildPaymentOption(
-                            icon: Iconsax.card,
-                            title: "بطاقة ائتمان",
-                            subtitle: "ادفع باستخدام بطاقتك الائتمانية",
-                            value: 'card',
-                          ),
-                        ],
-                      ),
+                        // Credit Card Option
+                        _buildPaymentOption(
+                          icon: Iconsax.card,
+                          title: "بطاقة ائتمان",
+                          subtitle: "ادفع باستخدام بطاقتك الائتمانية",
+                          value: 'card',
+                        ),
+                      ],
                     ),
+                  ),
 
-                    const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                    // Order Summary Section
-                    _buildOrderSummary(context, formKey, downPaymentController.text),
-                  ],
-                ),
+                  // Order Summary Section
+                  _buildOrderSummary(
+                    context,
+                    formKey,
+                    downPaymentController.text,
+                  ),
+                ],
               ),
             ),
           ),
         ),
-      );
+      ),
+    );
   }
 
   Widget _buildPaymentOption({
@@ -174,7 +173,7 @@ class _PaymentState extends State<Payment> {
     return InkWell(
       onTap: () {
         setState(() {
-          if(selectedPaymentMethod == "card"){
+          if (selectedPaymentMethod == "card") {
             selectedPaymentMethod = value;
           }
         });
@@ -231,10 +230,7 @@ class _PaymentState extends State<Payment> {
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey.shade600,
-                    ),
+                    style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
                   ),
                 ],
               ),
@@ -242,8 +238,7 @@ class _PaymentState extends State<Payment> {
             Radio<String>(
               value: value,
               groupValue: selectedPaymentMethod,
-              onChanged: (String? newValue) {
-              },
+              onChanged: (String? newValue) {},
               activeColor: Theme.of(context).colorScheme.tertiary,
             ),
           ],
@@ -261,10 +256,7 @@ class _PaymentState extends State<Payment> {
 
         const Text(
           "معلومات البطاقة",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 15),
 
@@ -276,9 +268,7 @@ class _PaymentState extends State<Payment> {
             labelText: "رقم البطاقة",
             hintText: "1234 5678 9012 3456",
             prefixIcon: const Icon(Icons.credit_card),
-            border: OutlineInputBorder(
-              borderRadius: Constants.BORDER_RADIUS_5,
-            ),
+            border: OutlineInputBorder(borderRadius: Constants.BORDER_RADIUS_5),
             enabledBorder: OutlineInputBorder(
               borderRadius: Constants.BORDER_RADIUS_5,
               borderSide: BorderSide(color: Colors.grey.shade300),
@@ -300,9 +290,7 @@ class _PaymentState extends State<Payment> {
             labelText: "اسم حامل البطاقة",
             hintText: "الاسم كما هو مكتوب على البطاقة",
             prefixIcon: const Icon(Icons.person_outline),
-            border: OutlineInputBorder(
-              borderRadius: Constants.BORDER_RADIUS_5,
-            ),
+            border: OutlineInputBorder(borderRadius: Constants.BORDER_RADIUS_5),
             enabledBorder: OutlineInputBorder(
               borderRadius: Constants.BORDER_RADIUS_5,
               borderSide: BorderSide(color: Colors.grey.shade300),
@@ -376,8 +364,10 @@ class _PaymentState extends State<Payment> {
     );
   }
 
-  Widget _buildOrderSummary(BuildContext context, GlobalKey<FormState> formKey,
-      String downPayment
+  Widget _buildOrderSummary(
+    BuildContext context,
+    GlobalKey<FormState> formKey,
+    String downPayment,
   ) {
     return StyledContainer(
       child: Column(
@@ -388,30 +378,38 @@ class _PaymentState extends State<Payment> {
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 30),
-          _summaryRow("المجموع الفرعي", context, "${Provider.of<CartVM>(context).totalAmount} EGP"),
+          _summaryRow(
+            "المجموع الفرعي",
+            context,
+            "${Provider.of<CartVM>(context).totalAmount} EGP",
+          ),
           const SizedBox(height: 15),
-          _summaryRow("مدفوع مقدما", context, "${downPayment == "" ? 0 : downPayment} EGP"),
+          _summaryRow(
+            "مدفوع مقدما",
+            context,
+            "${downPayment == "" ? 0 : downPayment} EGP",
+          ),
           const SizedBox(height: 15),
-          _summaryRow("رسوم التوصيل", context,
-              Provider.of<CartVM>(context).itemCount == 0 ? "0.0 EGP":"${
-              Governorates.getDeliveryPrice(Provider.of<UserViewModel>(context)
-              .governorate).toString()} EGP"),
+          _summaryRow(
+            "رسوم التوصيل",
+            context,
+            Provider.of<CartVM>(context).itemCount == 0
+                ? "0.0 EGP"
+                : "${Governorates.getDeliveryPrice(Provider.of<UserViewModel>(context).governorate).toString()} EGP",
+          ),
           const SizedBox(height: 30),
           Divider(),
           const SizedBox(height: 20),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children:  [
+            children: [
               const Text(
                 "الإجمالي",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               Text(
-                "${Provider.of<CartVM>(context).totalAmount - double.parse(downPayment.isEmpty? "0.0" : downPayment) +
-                    (Provider.of<CartVM>(context).itemCount == 0 ?
-                    0 :
-                    Governorates.getDeliveryPrice(Provider.of<UserViewModel>(context).governorate))} EGP",
+                "${Provider.of<CartVM>(context).totalAmount - double.parse(downPayment.isEmpty ? "0.0" : downPayment) + (Provider.of<CartVM>(context).itemCount == 0 ? 0 : Governorates.getDeliveryPrice(Provider.of<UserViewModel>(context).governorate))} EGP",
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
               ),
             ],
@@ -425,7 +423,7 @@ class _PaymentState extends State<Payment> {
           // notes
           TextFormField(
             maxLines: 5,
-            onChanged: (value){
+            onChanged: (value) {
               setState(() {
                 notesController.text = value;
               });
@@ -459,40 +457,67 @@ class _PaymentState extends State<Payment> {
           const SizedBox(height: 30),
 
           Consumer<TimelineController>(
-            builder: (context, timeline, child) => DefaultButton(
-              onTap: () async {
-                if(!formKey.currentState!.validate() || downPayment.isEmpty){
-                  return;
-                }
-                final state = await Provider.of<CartVM>(
-                  context,
-                  listen: false,
-                ).placeOrder(downPayment: downPayment.toString(), notes: notesController.text, images: Provider.of<DragDropController>(context, listen: false).images);
+            builder: (context, timeline, child) => Column(
+              children: [
+                DefaultButton(
+                  onTap: () async {
+                    if (!formKey.currentState!.validate() ||
+                        downPayment.isEmpty) {
+                      return;
+                    }
+                    final state =
+                        await Provider.of<CartVM>(
+                          context,
+                          listen: false,
+                        ).placeOrder(
+                          downPayment: downPayment.toString(),
+                          notes: notesController.text,
+                          images: Provider.of<DragDropController>(
+                            context,
+                            listen: false,
+                          ).images,
+                        );
 
-                if (state != null) {
-                  ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        selectedPaymentMethod == 'cash'
-                            ? "تم تأكيد طلبك - الدفع عند الاستلام"
-                            : "تم تأكيد طلبك والدفع بنجاح",
-                      ),
-                      duration: const Duration(seconds: 2),
-                      behavior: SnackBarBehavior.floating,
-                      backgroundColor: Theme.of(context).colorScheme.tertiary,
+                    if (state != null) {
+                      ScaffoldMessenger.of(
+                        navigatorKey.currentContext!,
+                      ).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            selectedPaymentMethod == 'cash'
+                                ? "تم تأكيد طلبك - الدفع عند الاستلام"
+                                : "تم تأكيد طلبك والدفع بنجاح",
+                          ),
+                          duration: const Duration(seconds: 2),
+                          behavior: SnackBarBehavior.floating,
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.tertiary,
+                        ),
+                      );
+                      timeline.changePage(3);
+                      Provider.of<CartVM>(context, listen: false).clear();
+                    }
+                  },
+                  title: "تأكيد الطلب",
+                  margin: EdgeInsets.zero,
+                  isLoading: Provider.of<CartVM>(context).isLoading,
+                  isValid: !Provider.of<CartVM>(context).isLoading,
+                ),
+                const SizedBox(height: 10),
+                TextButton(
+                  onPressed: () {
+                    timeline.previousPage();
+                  },
+                  child: const Text(
+                    "العودة للخطوة السابقة",
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.bold,
                     ),
-                  );
-                  timeline.changePage(3);
-                  Provider.of<CartVM>(
-                    context,
-                    listen: false,
-                  ).clear();
-                }
-              },
-              title: "تأكيد الطلب",
-              margin: EdgeInsets.zero,
-              isLoading: Provider.of<CartVM>(context).isLoading,
-              isValid: !Provider.of<CartVM>(context).isLoading,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -501,11 +526,11 @@ class _PaymentState extends State<Payment> {
   }
 
   Widget _summaryRow(
-      String label,
-      BuildContext context,
-      String value, {
-        bool isRed = false,
-      }) {
+    String label,
+    BuildContext context,
+    String value, {
+    bool isRed = false,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

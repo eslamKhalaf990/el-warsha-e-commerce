@@ -8,16 +8,20 @@ import 'package:warsha_commerce/utils/image_helper.dart';
 import 'package:warsha_commerce/view_models/cart_v_m.dart';
 import 'package:warsha_commerce/views/products/product_details.dart';
 
+enum ProductCardStyle { standard, modern, slim }
+
 class ProductCard extends StatefulWidget {
   final Product product;
   final bool isMobile;
   final double imageAspectRatio;
+  final ProductCardStyle style;
 
   const ProductCard({
     super.key,
     required this.product,
     required this.isMobile,
     this.imageAspectRatio = 1.2,
+    this.style = ProductCardStyle.standard,
   });
 
   @override
@@ -44,6 +48,9 @@ class _ProductCardState extends State<ProductCard>
 
     super.build(context);
 
+    final bool isSlim = widget.style == ProductCardStyle.slim;
+    final bool isModern = widget.style == ProductCardStyle.modern;
+
     return MouseRegion(
       cursor: isOutOfStock
           ? SystemMouseCursors.basic
@@ -52,31 +59,33 @@ class _ProductCardState extends State<ProductCard>
       onExit: (_) => setState(() => _isHovered = false),
       child: GestureDetector(
         onTap: isOutOfStock ? null : () {
-          // Navigator.push(context, MaterialPageRoute(builder: (_) => ProductDetailsPage(
-          //   product: ProductModel(
-          //     title: widget.product.name,
-          //     price: widget.product.sellingPrice,
-          //     images: ["${Baseurl.baseURLImages}${ImageHelper.extractFileId(widget.product.imageUrl)}"], // Replace with your image
-          //     availableColors: [Colors.black, Colors.grey[800]!, Colors.red[400]!], // Silver color
-          //     colorName: "Silver",
-          //     sizes: ["16mm / us 6", "17mm / us 7", "18mm / us 8", "19mm / us 9", "20mm / us 10"],
-          //     inStock: true,
-          //     badges: ["1 Year Color Warranty", "Buy 2 Get 1 Free"],
-          //   ),
-          // )));
+          Navigator.push(context, MaterialPageRoute(builder: (_) => ProductDetailsPage(
+            product: ProductModel(
+              title: widget.product.name,
+              price: widget.product.sellingPrice,
+              images: ["${Baseurl.baseURLImages}${ImageHelper.extractFileId(widget.product.imageUrl)}"],
+              availableColors: [Colors.black, Colors.grey[800]!, Colors.red[400]!],
+              colorName: "أسود",
+              sizes: ["S", "M", "L", "XL"],
+              inStock: !isOutOfStock,
+              badges: isDiscountApplied ? ["خصم لفترة محدودة"] : ["وصل حديثاً"],
+            ),
+          )));
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           transform: Matrix4.identity()
             ..translate(0.0, _isHovered && !widget.isMobile ? -4.0 : 0.0),
           decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: Colors.grey.shade200),
-            borderRadius: Constants.BORDER_RADIUS_5,
+            color: isSlim ? const Color(0xFFF5F5F5) : Colors.white,
+            border: isSlim 
+                ? Border.all(color: Colors.grey.shade200, width: 0.5) 
+                : (isModern ? null : Border.all(color: Colors.grey.shade200)),
+            borderRadius: isSlim ? BorderRadius.circular(16) : Constants.BORDER_RADIUS_5,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(_isHovered ? 0.08 : 0.0),
-                blurRadius: 12,
+                color: Colors.black.withOpacity(_isHovered || isModern ? 0.06 : (isSlim ? 0.02 : 0.0)),
+                blurRadius: isModern ? 15 : 12,
                 offset: const Offset(0, 4),
               ),
             ],
@@ -93,7 +102,9 @@ class _ProductCardState extends State<ProductCard>
                   fit: StackFit.expand,
                   children: [
                     ClipRRect(
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
+                      borderRadius: isSlim 
+                        ? const BorderRadius.vertical(top: Radius.circular(16)) 
+                        : const BorderRadius.vertical(top: Radius.circular(25)),
                       child: Opacity(
                         opacity: isOutOfStock ? 0.6 : 1.0,
                         child: CachedNetworkImage(
@@ -243,7 +254,7 @@ class _ProductCardState extends State<ProductCard>
               // We use Expanded here to fill the remaining space calculated by our grid formula
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.all(12.0),
+                  padding: EdgeInsets.all(isSlim ? 10.0 : 12.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment
@@ -258,7 +269,7 @@ class _ProductCardState extends State<ProductCard>
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontSize: 10,
+                              fontSize: isSlim ? 9 : 10,
                               fontWeight: FontWeight.bold,
                               color: Colors.grey[500],
                             ),
@@ -269,7 +280,7 @@ class _ProductCardState extends State<ProductCard>
                             maxLines: 2, // Limit to 2 lines
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontSize: 13, // Slightly smaller for better fit
+                              fontSize: isSlim ? 12 : 13, // Slightly smaller for better fit
                               fontWeight: FontWeight.w600,
                               height: 1.2,
                               color: isOutOfStock
@@ -286,17 +297,16 @@ class _ProductCardState extends State<ProductCard>
                         children: [
                           // 1. Price Section
                           Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              isDiscountApplied ? Text(
+                              if (isDiscountApplied) Text(
                                 "EGP $priceAfterDiscount",
                                 style: TextStyle(
-                                  fontSize: 15,
+                                  fontSize: isModern ? 16 : (isSlim ? 14 : 15),
                                   fontWeight: FontWeight.w800,
-                                  color: isOutOfStock
-                                      ? Colors.grey
-                                      : Colors.black,
+                                  color: isModern ? Colors.blue.shade900 : (isOutOfStock ? Colors.grey : Colors.black),
                                 ),
-                              ) : Container(),
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 "EGP $sellingPrice",
@@ -304,7 +314,7 @@ class _ProductCardState extends State<ProductCard>
                                   decoration: isDiscountApplied
                                       ? TextDecoration.lineThrough
                                       : TextDecoration.none,
-                                  fontSize: 15,
+                                  fontSize: isSlim ? 13 : 15,
                                   fontWeight: FontWeight.w800,
                                   color: isOutOfStock || isDiscountApplied
                                       ? Colors.grey.shade600

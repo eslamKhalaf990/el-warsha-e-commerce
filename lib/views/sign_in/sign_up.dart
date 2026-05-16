@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:warsha_commerce/controllers/time_line.dart';
 import 'package:warsha_commerce/utils/const_values.dart';
 import 'package:warsha_commerce/utils/default_button.dart';
 import 'package:warsha_commerce/utils/governerates.dart';
-import 'package:warsha_commerce/utils/navigator.dart';
-import 'package:warsha_commerce/view_models/customers_v_m.dart';
+import 'package:warsha_commerce/utils/deafualt_form_field.dart';
 import 'package:warsha_commerce/view_models/user_v_m.dart';
 import 'package:warsha_commerce/views/sign_in/verify_otp.dart';
 
 class SignUpForm extends StatefulWidget {
-  SignUpForm({super.key});
+  const SignUpForm({super.key});
 
   @override
   State<SignUpForm> createState() => _SignUpFormState();
@@ -28,6 +26,8 @@ class _SignUpFormState extends State<SignUpForm> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
 
+  bool _obscurePassword = true;
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -38,178 +38,162 @@ class _SignUpFormState extends State<SignUpForm> {
           const Text(
             'إنشاء حساب جديد',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 22,
               fontWeight: FontWeight.bold,
               color: Color(0xFF222222),
+              letterSpacing: -0.5,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'املأ البيانات التالية لإنشاء حسابك',
+            'انضم إلينا اليوم واستمتع بتجربة تسوق فريدة',
             style: TextStyle(fontSize: 14, color: Colors.grey[600]),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 32),
 
           // Full Name
           _buildLabel('الاسم بالكامل'),
           const SizedBox(height: 8),
-          _buildTextField(
+          DefaultForm(
             controller: _nameController,
-            hint: 'مثال: أحمد محمد',
+            title: 'مثال: أحمد محمد',
             icon: Iconsax.profile_circle_copy,
-            validator: (value) => value!.isEmpty ? 'يرجى إدخال الاسم' : null,
-            context: context,
+            validation: (value) => value!.isEmpty ? 'يرجى إدخال الاسم' : null,
           ),
           const SizedBox(height: 20),
 
           // Email
           _buildLabel('البريد الإلكتروني'),
           const SizedBox(height: 8),
-          _buildTextField(
+          DefaultForm(
             controller: _emailController,
-            hint: 'example@email.com',
+            title: 'example@email.com',
             icon: Iconsax.sms_copy,
             inputType: TextInputType.emailAddress,
-            validator: (value) =>
-            value!.isEmpty ? 'يرجى إدخال البريد الإلكتروني' : null,
-            context: context,
+            validation: (value) =>
+                value!.isEmpty ? 'يرجى إدخال البريد الإلكتروني' : null,
           ),
           const SizedBox(height: 20),
 
           // Phone Number
           _buildLabel('رقم الهاتف'),
           const SizedBox(height: 8),
-          _buildTextField(
+          DefaultForm(
             controller: _phoneController,
-            hint: '01xxxxxxxxx',
+            title: '01xxxxxxxxx',
             icon: Iconsax.call_copy,
             inputType: TextInputType.phone,
-            validator: (value) =>
-            value!.length < 11 ? 'يرجى إدخال رقم هاتف صحيح' : null,
-            context: context,
-          ),
-          const SizedBox(height: 20),
-
-          // Additional Phone Number
-          _buildLabel('رقم هاتف اضافي (اختياري)'),
-          const SizedBox(height: 8),
-          _buildTextField(
-            controller: _secondPhoneController,
-            hint: '01xxxxxxxxx',
-            icon: Iconsax.call_copy,
-            inputType: TextInputType.phone,
-            context: context,
+            validation: (value) =>
+                value!.length < 11 ? 'يرجى إدخال رقم هاتف صحيح' : null,
           ),
           const SizedBox(height: 20),
 
           // Password
           _buildLabel('كلمة المرور'),
           const SizedBox(height: 8),
-          _buildTextField(
+          DefaultForm(
             controller: _passwordController,
-            hint: '••••••••',
+            title: '••••••••',
             icon: Iconsax.key_copy,
-            isPassword: true,
-            validator: (value) => value!.length < 6
+            isPassword: _obscurePassword,
+            suffixIcon: IconButton(
+              icon: Icon(
+                _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                size: 20,
+                color: Colors.grey,
+              ),
+              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+            ),
+            validation: (value) => value!.length < 6
                 ? 'كلمة المرور يجب أن تكون 6 أحرف على الأقل'
                 : null,
-            context: context,
           ),
           const SizedBox(height: 20),
 
           // City
-          _buildLabel('المحافظة / المدينة'),
+          _buildLabel('المحافظة'),
           const SizedBox(height: 8),
           _buildDropdownField(
             value: _cityController.text,
             items: Governorates.shippingRates.keys.toList(),
-            hint: 'اختر المدينة',
+            hint: 'اختر المحافظة',
             icon: Iconsax.location_copy,
-            context: context,
-            onChanged: (newValue) {
-              setState(() {
-                _cityController.text = newValue!;
-              });
-            },
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'يرجى اختيار المدينة';
-              }
-              return null;
-            },
+            onChanged: (newValue) => setState(() => _cityController.text = newValue!),
+            validator: (value) => (value == null || value.isEmpty) ? 'يرجى اختيار المحافظة' : null,
           ),
           const SizedBox(height: 20),
 
           // Address
           _buildLabel('العنوان بالتفصيل'),
           const SizedBox(height: 8),
-          _buildTextField(
+          DefaultForm(
             controller: _addressController,
-            hint: 'اسم الشارع، رقم المبنى، الدور...',
+            title: 'اسم الشارع، رقم المبنى، الدور...',
             icon: Iconsax.home_copy,
-            maxLines: 3,
-            validator: (value) => value!.isEmpty ? 'يرجى إدخال العنوان' : null,
-            context: context,
+            numberOfLines: 2,
+            validation: (value) => value!.isEmpty ? 'يرجى إدخال العنوان' : null,
           ),
 
           const SizedBox(height: 32),
 
           Consumer<UserViewModel>(
-            builder: (context, userVM, child) => DefaultButton(
-              onTap: () async {
-                if (_formKey.currentState!.validate()) {
-                  final state = await userVM.addCustomer(
-                    _nameController.text,
-                    _cityController.text,
-                    _phoneController.text,
-                    _addressController.text,
-                    _secondPhoneController.text,
-                    _cityController.text,
-                    _emailController.text,
-                    _passwordController.text,
-                  );
+            builder: (context, userVM, child) => SizedBox(
+              width: double.infinity,
+              height: 55,
+              child: DefaultButton(
+                onTap: () async {
+                  if (_formKey.currentState!.validate()) {
+                    final state = await userVM.addCustomer(
+                      _nameController.text,
+                      _cityController.text,
+                      _phoneController.text,
+                      _addressController.text,
+                      _secondPhoneController.text,
+                      _cityController.text,
+                      _emailController.text,
+                      _passwordController.text,
+                    );
 
-                  if (!context.mounted) return;
+                    if (!context.mounted) return;
 
-                  if (state == "customer_added") {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text(
-                            'تم إنشاء الحساب بنجاح، يمكنك متابعة طلبك'),
-                        backgroundColor: Theme.of(context).colorScheme.tertiary,
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            VerifyOtp(email: _emailController.text),
-                      ),
-                    );
-                  } else if (state == "customer_already_exists"){
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("الحساب موجود بالفعل"),
-                        backgroundColor: Colors.red,
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  }  else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("لم يتم إنشاء الحساب"),
-                        backgroundColor: Colors.red,
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
+                    if (state == "customer_added") {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('تم إنشاء الحساب بنجاح'),
+                          backgroundColor: Colors.black,
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => VerifyOtp(email: _emailController.text),
+                        ),
+                      );
+                    } else if (state == "customer_already_exists") {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("الحساب موجود بالفعل"),
+                          backgroundColor: Colors.red,
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("لم يتم إنشاء الحساب"),
+                          backgroundColor: Colors.red,
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
                   }
-                }
-              },
-              title: 'إنشاء الحساب',
-              margin: EdgeInsets.zero,
-              isValid: !userVM.isLoading,
-              isLoading: userVM.isLoading,
+                },
+                title: 'إنشاء حساب جديد',
+                margin: EdgeInsets.zero,
+                isValid: !userVM.isLoading,
+                isLoading: userVM.isLoading,
+              ),
             ),
           ),
         ],
@@ -221,65 +205,9 @@ class _SignUpFormState extends State<SignUpForm> {
     return Text(
       text,
       style: const TextStyle(
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.bold,
         fontSize: 14,
-        color: Color(0xFF222222),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hint,
-    required IconData icon,
-    TextInputType inputType = TextInputType.text,
-    bool isPassword = false,
-    int maxLines = 1,
-    String? Function(String?)? validator,
-    required BuildContext context,
-  }) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: inputType,
-      obscureText: isPassword,
-      maxLines: maxLines,
-      validator: validator,
-      style: const TextStyle(fontSize: 15),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: TextStyle(
-          color: Theme.of(context).colorScheme.tertiary,
-          fontSize: 14,
-        ),
-        prefixIcon: Icon(
-          icon,
-          color: Theme.of(context).colorScheme.tertiary,
-          size: 22,
-        ),
-        filled: true,
-        fillColor: Theme.of(context).colorScheme.tertiary.withAlpha(10),
-        contentPadding: EdgeInsets.symmetric(
-          vertical: maxLines > 1 ? 16 : 18,
-          horizontal: 16,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: Constants.BORDER_RADIUS_5,
-          borderSide: BorderSide(color: Theme.of(context).colorScheme.tertiary),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: Constants.BORDER_RADIUS_5,
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.tertiary.withAlpha(0),
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: Constants.BORDER_RADIUS_5,
-          borderSide: const BorderSide(color: Color(0xFF222222), width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: Constants.BORDER_RADIUS_5,
-          borderSide: const BorderSide(color: Colors.red, width: 1),
-        ),
+        color: Color(0xFF495057),
       ),
     );
   }
@@ -291,44 +219,32 @@ class _SignUpFormState extends State<SignUpForm> {
     required IconData icon,
     required void Function(String?) onChanged,
     String? Function(String?)? validator,
-    required BuildContext context,
   }) {
     return DropdownButtonFormField<String>(
-      initialValue: items.contains(value) && value.isNotEmpty ? value : null,
+      value: items.contains(value) && value.isNotEmpty ? value : null,
       items: items.map((String city) {
         return DropdownMenuItem<String>(
           value: city,
-          child: Text(city, style: const TextStyle(fontSize: 15)),
+          child: Text(city, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
         );
       }).toList(),
       onChanged: onChanged,
       validator: validator,
-      icon: Icon(Icons.arrow_drop_down,
-          color: Theme.of(context).colorScheme.tertiary),
+      icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF222222)),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(
-          color: Theme.of(context).colorScheme.tertiary,
-          fontSize: 14,
-        ),
-        prefixIcon: Icon(
-          icon,
-          color: Theme.of(context).colorScheme.tertiary,
-          size: 22,
-        ),
+        hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+        prefixIcon: Icon(icon, color: const Color(0xFF222222), size: 20),
         filled: true,
-        fillColor: Theme.of(context).colorScheme.tertiary.withAlpha(10),
-        contentPadding:
-        const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+        fillColor: const Color(0xFFF8F9FA),
+        contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
         border: OutlineInputBorder(
           borderRadius: Constants.BORDER_RADIUS_5,
-          borderSide: BorderSide(color: Theme.of(context).colorScheme.tertiary),
+          borderSide: const BorderSide(color: Color(0xFFE9ECEF)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: Constants.BORDER_RADIUS_5,
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.tertiary.withAlpha(0),
-          ),
+          borderSide: const BorderSide(color: Color(0xFFE9ECEF)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: Constants.BORDER_RADIUS_5,
@@ -339,7 +255,7 @@ class _SignUpFormState extends State<SignUpForm> {
           borderSide: const BorderSide(color: Colors.red, width: 1),
         ),
       ),
-      dropdownColor: Theme.of(context).canvasColor,
+      dropdownColor: Colors.white,
       borderRadius: Constants.BORDER_RADIUS_5,
     );
   }

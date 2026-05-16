@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:warsha_commerce/view_models/user_v_m.dart';
 import 'package:warsha_commerce/views/orders/order_completed.dart';
 import 'package:warsha_commerce/views/payment/payment_step.dart';
 import 'package:warsha_commerce/views/shopping_cart/cart_items.dart';
@@ -7,6 +8,25 @@ import 'package:warsha_commerce/views/sign_in/sign_in.dart';
 
 class TimelineController extends ChangeNotifier {
   int page = 0;
+  bool _initialized = false;
+
+  void checkAuth(UserViewModel userVM) {
+    if (!_initialized) {
+      if (userVM.token != "-") {
+        page = 1; // Skip Sign In if token is present
+      } else {
+        page = 0;
+      }
+      _initialized = true;
+      // No notifyListeners() here to avoid build errors during init, 
+      // though Provider takes care of it usually if called from build.
+    }
+  }
+
+  // Allow resetting initialization if needed (e.g. after logout)
+  void reset() {
+    _initialized = false;
+  }
 
   final List<Widget> desktopSteps = [
     DeliveryDetailsPage(),

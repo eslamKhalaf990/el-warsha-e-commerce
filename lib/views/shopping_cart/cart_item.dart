@@ -22,204 +22,143 @@ class CartItemRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Check if screen is very small to adjust layout inside row
-    bool isSmallScreen = MediaQuery.of(context).size.width < 500;
+    bool isSmallScreen = MediaQuery.of(context).size.width < 600;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Image Placeholder
+        // Product Image
         Container(
-          width: isSmallScreen ? 80 : 110, // Smaller image on mobile
-          height: isSmallScreen ? 80 : 110,
+          width: isSmallScreen ? 100 : 120,
+          height: isSmallScreen ? 100 : 120,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.tertiary.withAlpha(10),
+            color: const Color(0xFFF8F9FA),
             borderRadius: Constants.BORDER_RADIUS_5,
-            border: Border.all(
-              width: 1,
-              color: Theme.of(context).colorScheme.tertiary.withAlpha(20),
-            ),
+            border: Border.all(color: const Color(0xFFE9ECEF)),
           ),
-          alignment: Alignment.center,
-          child: Container(
-            padding: const EdgeInsets.all(0),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceTint,
-              borderRadius: Constants.BORDER_RADIUS_20,
-            ),
-            child: ClipRRect(
-              borderRadius: Constants.BORDER_RADIUS_5,
-              child: Image.network(
-                "${Baseurl.baseURLImages}${ImageHelper.extractFileId(data.image)}",
-                width: isSmallScreen ? 70 : 100, // Smaller image on mobile
-                height: isSmallScreen ? 70 : 100,
-                fit: BoxFit.cover,
-                // Show a loading spinner while the image is loading
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: Center(
-                      child: SpinKitChasingDots(
-                        color: Theme.of(context).colorScheme.tertiary,
-                        size: 20,
-                      ),
-                    ),
-                  );
-                },
-                // Show a fallback if the image fails to load
-                errorBuilder: (context, error, stackTrace) {
-                  return const Icon(Iconsax.shopping_bag, size: 40);
-                },
-              ),
+          child: ClipRRect(
+            borderRadius: Constants.BORDER_RADIUS_5,
+            child: Image.network(
+              "${Baseurl.baseURLImages}${ImageHelper.extractFileId(data.image)}",
+              fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return const Center(
+                  child: SpinKitPulse(color: Color(0xFF222222), size: 30),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) => 
+                  const Icon(Iconsax.image_copy, color: Colors.grey),
             ),
           ),
         ),
 
-        SizedBox(width: isSmallScreen ? 15 : 25),
+        const SizedBox(width: 20),
 
-        // Item Details (Wrapped in Expanded to avoid overflow)
+        // Product Details
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment
-                .center, // Centers content vertically if image is tall
             children: [
-              // 1. Name: Limit lines to prevent it from eating all vertical space
-              Text(
-                data.name,
-                style: TextStyle(
-                  fontSize: isSmallScreen
-                      ? 14
-                      : 18, // Slightly smaller base for mobile
-                  fontWeight: FontWeight.bold,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4),
-
-              Text(
-                "النوع: ${data.category}",
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-              ),
-
-              // Spacer pushes pricing to the bottom, or just use SizedBox for fixed gap
-              const SizedBox(height: 8),
-
-              if (data.discount > 0) ...[
-                // 2. Responsive Price Layout using WRAP
-                Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 8, // Horizontal space between items
-                  runSpacing: 4, // Vertical space if it wraps to next line
-                  children: [
-                    // A. Final Price (The Hero)
-                    Column(
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "${data.totalPrice} EGP",
-                          style: TextStyle(
-                            fontSize: isSmallScreen ? 16 : 20,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.black,
+                          data.name,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF222222),
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          "المقاس: ${data.size}  •  اللون: ${data.color}",
+                          style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: removeItem,
+                    icon: const Icon(Iconsax.trash_copy, size: 20, color: Colors.red),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  // Quantity Selector
+                  Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8F9FA),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: const Color(0xFFE9ECEF)),
+                    ),
+                    child: Row(
+                      children: [
+                        _buildQtyBtn(Icons.remove, decrement),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Text(
+                            "${data.quantity}",
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
-
-                        // B. Old Price (Struck through)
+                        _buildQtyBtn(Icons.add, increment),
+                      ],
+                    ),
+                  ),
+                  // Price
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      if (data.discount > 0)
                         Text(
                           "${data.price} EGP",
-                          style: TextStyle(
-                            fontSize: 14,
+                          style: const TextStyle(
+                            fontSize: 12,
                             color: Colors.grey,
                             decoration: TextDecoration.lineThrough,
                           ),
                         ),
-                      ],
-                    ),
-
-                    // C. The Savings Badge (Optional: Keep it inside Wrap or move above)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.green.shade50,
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(color: Colors.green.shade200),
-                      ),
-                      child: Text(
-                        "SAVE ${data.discount}", // Short text for mobile
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green[800],
+                      Text(
+                        "${data.totalPrice} EGP",
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF222222),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ] else ...[
-                Text(
-                  "${data.totalPrice} EGP",
-                  style: TextStyle(
-                    fontSize: isSmallScreen ? 16 : 20,
-                    fontWeight: FontWeight.bold,
+                    ],
                   ),
-                ),
-              ],
-            ],
-          ),
-        ),
-        // Actions (Trash & Counter)
-        SizedBox(
-          height: isSmallScreen ? 80 : 110,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              IconButton(
-                onPressed: removeItem,
-                icon: Icon(Iconsax.trash_copy, color: Colors.red),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: isSmallScreen ? 4 : 8,
-                  vertical: 0,
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.tertiary.withAlpha(10),
-                  borderRadius: Constants.BORDER_RADIUS_5,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      onPressed: increment,
-                      icon: Icon(Icons.add, size: isSmallScreen ? 16 : 18),
-                    ),
-                    SizedBox(width: isSmallScreen ? 5 : 5),
-                    Text(
-                      "${data.quantity}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: isSmallScreen ? 14 : 16,
-                      ),
-                    ),
-                    SizedBox(width: isSmallScreen ? 10 : 5),
-                    IconButton(
-                      onPressed: decrement,
-                      icon: Icon(Icons.remove, size: isSmallScreen ? 16 : 18),
-                    ),
-                  ],
-                ),
+                ],
               ),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildQtyBtn(IconData icon, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Icon(icon, size: 16, color: const Color(0xFF222222)),
+      ),
     );
   }
 }

@@ -39,22 +39,34 @@ class _VerifyOtpState extends State<VerifyOtp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
+        foregroundColor: const Color(0xFF222222),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+            padding: const EdgeInsets.all(24.0),
             child: Container(
-              constraints: const BoxConstraints(maxWidth: 600),
+              constraints: const BoxConstraints(maxWidth: 500),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: Constants.BORDER_RADIUS_5,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(10),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
               ),
-              padding: EdgeInsets.all(25),
+              padding: const EdgeInsets.all(32),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -66,17 +78,20 @@ class _VerifyOtpState extends State<VerifyOtp> {
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF222222),
+                        letterSpacing: -0.5,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'أدخل الرمز المكون من 6 أرقام المرسل إلى\n${widget.email}',
                       style: TextStyle(
-                          fontSize: 14, color: Colors.grey[600], height: 1.4),
+                          fontSize: 14, color: Colors.grey[600], height: 1.5),
                     ),
                     const SizedBox(height: 32),
 
                     // 6-Digit OTP Input Row
+                    _buildLabel('رمز التحقق'),
+                    const SizedBox(height: 12),
                     Directionality(
                       textDirection: TextDirection.ltr,
                       child: Row(
@@ -86,7 +101,7 @@ class _VerifyOtpState extends State<VerifyOtp> {
                       ),
                     ),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 32),
 
                     // Resend OTP
                     Center(
@@ -97,7 +112,7 @@ class _VerifyOtpState extends State<VerifyOtp> {
                         child: Text(
                           'لم تستلم الرمز؟ إعادة إرسال',
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.tertiary.withAlpha(100),
+                            color: Colors.grey[700],
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
@@ -120,10 +135,9 @@ class _VerifyOtpState extends State<VerifyOtp> {
 
                             if (state == "verified") {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: const Text('تم التحقق بنجاح، يمكنك الآن تسجيل الدخول'),
-                                  backgroundColor:
-                                  Theme.of(context).colorScheme.tertiary,
+                                const SnackBar(
+                                  content: Text('تم التحقق بنجاح، يمكنك الآن تسجيل الدخول'),
+                                  backgroundColor: Colors.black,
                                   behavior: SnackBarBehavior.floating,
                                 ),
                               );
@@ -169,29 +183,28 @@ class _VerifyOtpState extends State<VerifyOtp> {
 
   Widget _buildOtpBox(int index, BuildContext context) {
     return SizedBox(
-      width: 55,
-      height: 55,
+      width: 50,
+      height: 60,
       child: TextFormField(
         controller: _controllers[index],
         focusNode: _focusNodes[index],
         keyboardType: TextInputType.number,
         textAlign: TextAlign.center,
         maxLength: 1,
-        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF222222)),
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         decoration: InputDecoration(
           counterText: "",
           filled: true,
-          fillColor: Theme.of(context).colorScheme.tertiary.withAlpha(10),
+          fillColor: const Color(0xFFF8F9FA),
+          contentPadding: EdgeInsets.zero,
           border: OutlineInputBorder(
             borderRadius: Constants.BORDER_RADIUS_5,
-            borderSide: BorderSide(color: Theme.of(context).colorScheme.tertiary),
+            borderSide: const BorderSide(color: Color(0xFFE9ECEF)),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: Constants.BORDER_RADIUS_5,
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.tertiary.withAlpha(0),
-            ),
+            borderSide: const BorderSide(color: Color(0xFFE9ECEF)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: Constants.BORDER_RADIUS_5,
@@ -207,6 +220,17 @@ class _VerifyOtpState extends State<VerifyOtp> {
           }
           setState(() {});
         },
+      ),
+    );
+  }
+
+  Widget _buildLabel(String text) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 14,
+        color: Color(0xFF495057),
       ),
     );
   }

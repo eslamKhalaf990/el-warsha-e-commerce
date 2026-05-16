@@ -170,4 +170,27 @@ class UserService {
     return response;
   }
 
+  Future<http.Response> getCustomerInfo(String id, String token) async {
+    debugPrint("fetching info for customer $id");
+    http.Response response;
+    try {
+      response = await http.get(
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          Uri.parse(
+            "${Baseurl.getAllCustomersAPI}/$id/info",
+          )
+      ).timeout(const Duration(seconds: Constants.TIMEOUT));
+    print(response.body);
+    } on TimeoutException {
+      throw Exception('The request timed out. Please try again later.');
+    } catch (e) {
+      throw Exception('Failed to fetch customer info: $e');
+    }
+    return response;
+  }
+
 }

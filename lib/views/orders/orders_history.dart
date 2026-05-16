@@ -4,6 +4,7 @@ import 'package:warsha_commerce/services/base_url.dart';
 import 'package:warsha_commerce/services/orders_service.dart';
 import 'package:warsha_commerce/utils/const_values.dart';
 import 'package:warsha_commerce/utils/date.dart';
+import 'package:warsha_commerce/utils/default_footer.dart';
 import 'package:warsha_commerce/view_models/order_v_m.dart';
 import 'package:warsha_commerce/view_models/user_v_m.dart';
 import 'package:warsha_commerce/views/orders/pdf_view.dart';
@@ -21,10 +22,24 @@ class OrdersHistory extends StatelessWidget {
     ),
       child: Consumer<OrderVM>(
       builder: (context, orderVM, child) => Scaffold(
+        backgroundColor: const Color(0xFFF8F9FA),
         appBar: AppBar(
-          title: const Text("طلباتي السابقة", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          backgroundColor: Colors.white,
+          elevation: 0,
+          foregroundColor: const Color(0xFF222222),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+            onPressed: () => Navigator.pop(context),
+          ),
+          title: const Text(
+            "طلباتي السابقة",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF222222),
+            ),
+          ),
           centerTitle: true,
-          automaticallyImplyLeading: false,
         ),
         body: Center(
           child: Container(
@@ -35,15 +50,25 @@ class OrdersHistory extends StatelessWidget {
             ) : orderVM.ordersList!.isEmpty ? Center(child: StyledContainer(
               padding: const EdgeInsets.all(100),
               child: Text("لا يوجد طلبات سابقة حتي الان. نحن بانتظار اولي الطلبات"),
-            )) : ListView.separated(
-              padding: const EdgeInsets.all(15),
-              itemCount: orderVM.ordersList?.length ?? 0,
-              itemBuilder: (BuildContext context, int index) {
-                return OrderHistoryCard(index: index, orderVM: orderVM,);
-              },
-              separatorBuilder: (BuildContext context, int index) {
-                return const SizedBox(height: 20);
-              },
+            )) : SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                children: [
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(15),
+                    itemCount: orderVM.ordersList?.length ?? 0,
+                    itemBuilder: (BuildContext context, int index) {
+                      return OrderHistoryCard(index: index, orderVM: orderVM,);
+                    },
+                    separatorBuilder: (BuildContext context, int index) {
+                      return const SizedBox(height: 20);
+                    },
+                  ),
+                  const DefaultFooter(),
+                ],
+              ),
             ),
           ),
         ),
